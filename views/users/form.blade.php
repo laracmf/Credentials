@@ -1,7 +1,7 @@
 <form class="form-horizontal" action="{{ $form['url'] }}" method="POST">
 
     {{ csrf_field() }}
-    @if($form['_method'])
+    @if(isset($form['_method']))
         {{ method_field($form['_method']) }}
     @endif
 
