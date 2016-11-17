@@ -30,7 +30,7 @@
         "illuminate/view": "5.2.*|5.3.*",
         "cartalyst/sentry": "~3.0",
         "graham-campbell/binput": "~3.0",
-        "graham-campbell/throttle": "~4.0",
+        "graham-campbell/throttle": "~5.2",
         "mccool/laravel-auto-presenter": "~3.0",
         "psr/log": "~1.0"
     },
