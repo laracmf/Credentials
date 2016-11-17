@@ -11,11 +11,8 @@
 
 namespace GrahamCampbell\Credentials\Http\Controllers;
 
-use Cartalyst\Sentry\Throttling\UserBannedException;
-use Cartalyst\Sentry\Throttling\UserSuspendedException;
-use Cartalyst\Sentry\Users\UserNotActivatedException;
-use Cartalyst\Sentry\Users\UserNotFoundException;
-use Cartalyst\Sentry\Users\WrongPasswordException;
+use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
+use Cartalyst\Sentinel\Checkpoints\NotActivatedException;
 use GrahamCampbell\Binput\Facades\Binput;
 use GrahamCampbell\Credentials\Facades\Credentials;
 use GrahamCampbell\Credentials\Facades\UserRepository;
@@ -96,30 +93,22 @@ class LoginController extends AbstractController
             $throttle->check();
 
             Credentials::authenticate($input, $remember);
-        } catch (WrongPasswordException $e) {
-            return Redirect::route('account.login')->withInput()->withErrors($val->errors())
-                ->with('error', 'Your password was incorrect.');
-        } catch (UserNotFoundException $e) {
-            return Redirect::route('account.login')->withInput()->withErrors($val->errors())
-                ->with('error', 'That user does not exist.');
-        } catch (UserNotActivatedException $e) {
+        } catch (NotActivatedException $e) {
             if (Config::get('credentials::activation')) {
                 return Redirect::route('account.login')->withInput()->withErrors($val->errors())
-                ->with('error', 'You have not yet activated this account.');
+                    ->with('error', 'You have not yet activated this account.');
             } else {
                 $throttle->user->attemptActivation($throttle->user->getActivationCode());
                 $throttle->user->addGroup(Credentials::getGroupProvider()->findByName('Users'));
 
                 return $this->postLogin();
             }
-        } catch (UserSuspendedException $e) {
-            $time = $throttle->getSuspensionTime();
-
+        } catch (ThrottlingException $e) {
             return Redirect::route('account.login')->withInput()->withErrors($val->errors())
-                ->with('error', "Your account has been suspended for $time minutes.");
-        } catch (UserBannedException $e) {
+                ->with('error', $e->getMessage());
+        } catch (\Exception $e) {
             return Redirect::route('account.login')->withInput()->withErrors($val->errors())
-                ->with('error', 'You have been banned. Please contact support.');
+                ->with('error', $e->getMessage());
         }
 
         return Redirect::intended(Config::get('credentials.home', '/'));

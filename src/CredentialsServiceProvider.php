@@ -183,10 +183,10 @@ class CredentialsServiceProvider extends ServiceProvider
     protected function registerCredentials()
     {
         $this->app->singleton('credentials', function ($app) {
-            $sentry = $app['sentry'];
+            $sentinel = $app['sentry'];
             $decorator = $app->make(PresenterDecorator::class);
 
-            return new Credentials($sentry, $decorator);
+            return new Credentials($sentinel, $decorator);
         });
 
         $this->app->alias('credentials', Credentials::class);

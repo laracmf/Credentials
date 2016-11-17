@@ -12,8 +12,7 @@
 namespace GrahamCampbell\Credentials\Models;
 
 use Carbon\Carbon;
-use Cartalyst\Sentry\Groups\GroupInterface;
-use Cartalyst\Sentry\Users\Eloquent\User as SentryUser;
+use Cartalyst\Sentinel\Users\EloquentUser;
 use GrahamCampbell\Credentials\Facades\Credentials;
 use GrahamCampbell\Credentials\Facades\RevisionRepository;
 use GrahamCampbell\Credentials\Models\Relations\RevisionableTrait;
@@ -26,7 +25,7 @@ use McCool\LaravelAutoPresenter\HasPresenter;
  *
  * @author Graham Campbell <graham@alt-three.com>
  */
-class User extends SentryUser implements HasPresenter
+class User extends EloquentUser implements HasPresenter
 {
     use BaseModelTrait, RevisionableTrait, SoftDeletes;
 

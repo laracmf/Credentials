@@ -50,7 +50,7 @@ class SentryThrottle
      */
     public function handle($request, Closure $next)
     {
-        $this->credentials->getThrottleProvider()->enable();
+        $this->credentials->enableCheckpoints();
 
         return $next($request);
     }

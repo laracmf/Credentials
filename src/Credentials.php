@@ -11,7 +11,7 @@
 
 namespace GrahamCampbell\Credentials;
 
-use Cartalyst\Sentry\Sentry;
+use Cartalyst\Sentinel\Sentinel;
 use McCool\LaravelAutoPresenter\PresenterDecorator;
 
 /**
@@ -31,9 +31,9 @@ class Credentials
     /**
      * The sentry instance.
      *
-     * @var \Cartalyst\Sentry\Sentry
+     * @var Sentinel
      */
-    protected $sentry;
+    protected $sentinel;
 
     /**
      * The decorator instance.
@@ -45,14 +45,14 @@ class Credentials
     /**
      * Create a new instance.
      *
-     * @param \Cartalyst\Sentry\Sentry                        $sentry
+     * @param \Cartalyst\Sentinel\Sentinel $sentinel
      * @param \McCool\LaravelAutoPresenter\PresenterDecorator $decorator
      *
      * @return void
      */
-    public function __construct(Sentry $sentry, PresenterDecorator $decorator)
+    public function __construct(Sentinel $sentinel, PresenterDecorator $decorator)
     {
-        $this->sentry = $sentry;
+        $this->sentinel = $sentinel;
         $this->decorator = $decorator;
     }
 
@@ -64,7 +64,7 @@ class Credentials
     public function check()
     {
         if ($this->cache === null) {
-            $this->cache = $this->sentry->check();
+            $this->cache = $this->sentinel->check();
         }
 
         return $this->cache && $this->getUser();
@@ -77,7 +77,7 @@ class Credentials
      */
     public function getDecoratedUser()
     {
-        if ($user = $this->sentry->getUser()) {
+        if ($user = $this->sentinel->getUser()) {
             return $this->decorator->decorate($user);
         }
     }
@@ -92,6 +92,6 @@ class Credentials
      */
     public function __call($method, $parameters)
     {
-        return call_user_func_array([$this->sentry, $method], $parameters);
+        return call_user_func_array([$this->sentinel, $method], $parameters);
     }
 }

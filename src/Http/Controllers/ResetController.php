@@ -11,7 +11,6 @@
 
 namespace GrahamCampbell\Credentials\Http\Controllers;
 
-use Cartalyst\Sentry\Users\UserNotFoundException;
 use GrahamCampbell\Binput\Facades\Binput;
 use GrahamCampbell\Credentials\Facades\Credentials;
 use GrahamCampbell\Credentials\Facades\UserRepository;
@@ -97,7 +96,7 @@ class ResetController extends AbstractController
 
             return Redirect::route('account.reset')
                 ->with('success', 'Check your email for password reset information.');
-        } catch (UserNotFoundException $e) {
+        } catch (\Exception $e) {
             return Redirect::route('account.reset')
                 ->with('error', 'That user does not exist.');
         }
@@ -141,7 +140,7 @@ class ResetController extends AbstractController
 
             return Redirect::to(Config::get('credentials.home', '/'))
                 ->with('success', 'Your password has been changed. Check your email for the new password.');
-        } catch (UserNotFoundException $e) {
+        } catch (\Exception $e) {
             return Redirect::to(Config::get('credentials.home', '/'))
                 ->with('error', 'There was a problem resetting your password. Please contact support.');
         }

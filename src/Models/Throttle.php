@@ -11,7 +11,7 @@
 
 namespace GrahamCampbell\Credentials\Models;
 
-use Cartalyst\Sentry\Throttling\Eloquent\Throttle as SentryThrottle;
+use Cartalyst\Sentinel\Throttling\EloquentThrottle;
 use DateTime;
 use GrahamCampbell\Credentials\Facades\RevisionRepository;
 use Illuminate\Support\Facades\Config;
@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Config;
  *
  * @author Graham Campbell <graham@alt-three.com>
  */
-class Throttle extends SentryThrottle
+class Throttle extends EloquentThrottle
 {
     use BaseModelTrait;
 

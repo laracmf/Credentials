@@ -11,8 +11,7 @@
 
 namespace GrahamCampbell\Credentials\Http\Controllers;
 
-use Cartalyst\Sentry\Users\UserAlreadyActivatedException;
-use Cartalyst\Sentry\Users\UserNotFoundException;
+use Cartalyst\Sentinel\Checkpoints\NotActivatedException;
 use GrahamCampbell\Binput\Facades\Binput;
 use GrahamCampbell\Credentials\Facades\Credentials;
 use GrahamCampbell\Credentials\Facades\UserRepository;
@@ -83,12 +82,12 @@ class ActivationController extends AbstractController
 
             return Redirect::route('account.login')
                 ->with('success', 'Your account has been activated successfully. You may now login.');
-        } catch (UserNotFoundException $e) {
-            return Redirect::to(Config::get('credentials.home', '/'))
-                ->with('error', 'There was a problem activating this account. Please contact support.');
-        } catch (UserAlreadyActivatedException $e) {
+        } catch (NotActivatedException $e) {
             return Redirect::route('account.login')
                 ->with('warning', 'You have already activated this account. You may want to login.');
+        } catch (\Exception $e) {
+            return Redirect::to(Config::get('credentials.home', '/'))
+                ->with('error', 'There was a problem activating this account. Please contact support.');
         }
     }
 
@@ -141,7 +140,7 @@ class ActivationController extends AbstractController
 
             return Redirect::route('account.resend')
                 ->with('success', 'Check your email for your new activation email.');
-        } catch (UserNotFoundException $e) {
+        } catch (\Exception $e) {
             return Redirect::route('account.resend')
                 ->with('error', 'That user does not exist.');
         }

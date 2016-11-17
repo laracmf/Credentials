@@ -11,7 +11,6 @@
 
 namespace GrahamCampbell\Credentials\Http\Controllers;
 
-use Cartalyst\Sentry\Users\UserExistsException;
 use GrahamCampbell\Binput\Facades\Binput;
 use GrahamCampbell\Credentials\Facades\Credentials;
 use GrahamCampbell\Credentials\Facades\UserRepository;
@@ -120,7 +119,7 @@ class RegistrationController extends AbstractController
 
             return Redirect::to(Config::get('credentials.home', '/'))
                 ->with('success', 'Your account has been created. Check your email for the confirmation link.');
-        } catch (UserExistsException $e) {
+        } catch (\Exception $e) {
             return Redirect::route('account.register')->withInput()->withErrors($val->errors())
                 ->with('error', 'That email address is taken.');
         }

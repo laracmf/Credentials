@@ -11,7 +11,6 @@
 
 namespace GrahamCampbell\Credentials\Models;
 
-use Cartalyst\Sentry\Groups\Eloquent\Group as SentryGroup;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -19,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * @author Graham Campbell <graham@alt-three.com>
  */
-class Group extends SentryGroup
+class Group
 {
     use BaseModelTrait, SoftDeletes;
 

@@ -11,10 +11,7 @@
 
 namespace GrahamCampbell\Credentials\Http\Controllers;
 
-use Cartalyst\Sentry\Throttling\UserBannedException;
-use Cartalyst\Sentry\Throttling\UserSuspendedException;
-use Cartalyst\Sentry\Users\UserExistsException;
-use Cartalyst\Sentry\Users\UserNotFoundException;
+use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
 use DateTime;
 use GrahamCampbell\Binput\Facades\Binput;
 use GrahamCampbell\Credentials\Facades\Credentials;
@@ -129,7 +126,7 @@ class UserController extends AbstractController
 
             return Redirect::route('users.show', ['users' => $user->id])
                 ->with('success', 'The user has been created successfully. Their password has been emailed to them.');
-        } catch (UserExistsException $e) {
+        } catch (\Exception $e) {
             return Redirect::route('users.create')->withInput()->withErrors($val->errors())
                 ->with('error', 'That email address is taken.');
         }
@@ -283,16 +280,11 @@ class UserController extends AbstractController
         try {
             $throttle = Credentials::getThrottleProvider()->findByUserId($id);
             $throttle->suspend();
-        } catch (UserNotFoundException $e) {
+        } catch (ThrottlingException $e) {
+            return Redirect::route('users.suspend', ['users' => $id])->withInput()
+                ->with('error', $e->getMessage());
+        } catch (\Exception $e) {
             throw new NotFoundHttpException('User Not Found', $e);
-        } catch (UserSuspendedException $e) {
-            $time = $throttle->getSuspensionTime();
-
-            return Redirect::route('users.suspend', ['users' => $id])->withInput()
-                ->with('error', "This user is already suspended for $time minutes.");
-        } catch (UserBannedException $e) {
-            return Redirect::route('users.suspend', ['users' => $id])->withInput()
-                ->with('error', 'This user has already been banned.');
         }
 
         return Redirect::route('users.show', ['users' => $id])
