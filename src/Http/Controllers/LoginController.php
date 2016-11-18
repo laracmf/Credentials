@@ -21,6 +21,7 @@ use GrahamCampbell\Throttle\Throttlers\ThrottlerInterface;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
+use GrahamCampbell\Credentials\Models\User;
 
 /**
  * This is the login controller class.
@@ -88,17 +89,18 @@ class LoginController extends AbstractController
         $this->throttler->hit();
 
         try {
-            $throttle = Credentials::getThrottleProvider()->findByUserLogin($input['email']);
-            $throttle->check();
-
             Credentials::authenticate($input, $remember);
         } catch (NotActivatedException $e) {
             if (Config::get('credentials::activation')) {
                 return Redirect::route('account.login')->withInput()->withErrors($val->errors())
                     ->with('error', 'You have not yet activated this account.');
             } else {
-                $throttle->user->attemptActivation($throttle->user->getActivationCode());
-                $throttle->user->addGroup(Credentials::getGroupProvider()->findByName('Users'));
+                $user = User::where('email', '=', $input['email'])->first();
+                Credentials::create($user);
+
+                //Set role for user
+                $role = Credentials::getRoleRepository()->findByName('User');
+                $role->users()->attach($user);
 
                 return $this->postLogin();
             }
