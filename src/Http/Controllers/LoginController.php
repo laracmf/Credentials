@@ -51,7 +51,6 @@ class LoginController extends AbstractController
             'getLogout' => 'user',
         ]);
 
-        $this->beforeFilter('throttle.login', ['only' => ['postLogin']]);
         $this->middleware(SentryThrottle::class, ['only' => ['postLogin']]);
 
         parent::__construct();

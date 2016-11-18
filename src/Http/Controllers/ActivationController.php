@@ -48,9 +48,6 @@ class ActivationController extends AbstractController
     {
         $this->throttler = $throttler;
 
-        $this->beforeFilter('throttle.activate', ['only' => ['getActivate']]);
-        $this->beforeFilter('throttle.resend', ['only' => ['postResend']]);
-
         parent::__construct();
     }
 
