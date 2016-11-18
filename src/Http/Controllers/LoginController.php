@@ -97,7 +97,7 @@ class LoginController extends AbstractController
                     ->with('error', 'You have not yet activated this account.');
             } else {
                 $user = User::where('email', '=', $input['email'])->first();
-                Activation::create($user);
+                Credentials::getActivationRepository()->create($user);
 
                 //Set role for user
                 $role = Credentials::getRoleRepository()->findByName('User');
