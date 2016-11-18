@@ -118,7 +118,7 @@ class ActivationController extends AbstractController
         $this->throttler->hit();
 
         try {
-            $user = Credentials::getUserRepository()->findByLogin($input['email']);
+            $user = Credentials::getUserRepository()->findByName($input['email']);
 
             if ($user->activated) {
                 return Redirect::route('account.resend')->withInput()

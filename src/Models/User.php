@@ -44,13 +44,6 @@ class User extends EloquentUser implements HasPresenter
     public static $name = 'user';
 
     /**
-     * The properties on the model that are dates.
-     *
-     * @var array
-     */
-    protected $dates = ['deleted_at'];
-
-    /**
      * The revisionable columns.
      *
      * @var array
@@ -194,49 +187,5 @@ class User extends EloquentUser implements HasPresenter
         }
 
         return $this->access[$key];
-    }
-
-    /**
-     * Adds the user to the given group.
-     *
-     * @param \Cartalyst\Sentry\Groups\GroupInterface $group
-     *
-     * @return bool
-     */
-    public function addGroup(GroupInterface $group)
-    {
-        if (Credentials::check()) {
-            RevisionRepository::create([
-                'revisionable_type' => get_class($this),
-                'revisionable_id'   => $this->getKey(),
-                'key'               => 'added_group',
-                'old_value'         => null,
-                'new_value'         => $group->getName(),
-                'user_id'           => Credentials::getUser()->id,
-            ]);
-        }
-
-        return parent::addGroup($group);
-    }
-
-    /**
-     * Removes the user from the given group.
-     *
-     * @param \Cartalyst\Sentry\Groups\GroupInterface $group
-     *
-     * @return bool
-     */
-    public function removeGroup(GroupInterface $group)
-    {
-        RevisionRepository::create([
-            'revisionable_type' => get_class($this),
-            'revisionable_id'   => $this->getKey(),
-            'key'               => 'removed_group',
-            'old_value'         => null,
-            'new_value'         => $group->getName(),
-            'user_id'           => Credentials::getUser()->id,
-        ]);
-
-        return parent::removeGroup($group);
     }
 }
