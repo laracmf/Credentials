@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
 use GrahamCampbell\Credentials\Models\User;
+use Cartalyst\Sentinel\Laravel\Facades\Activation;
 
 /**
  * This is the login controller class.
@@ -96,7 +97,7 @@ class LoginController extends AbstractController
                     ->with('error', 'You have not yet activated this account.');
             } else {
                 $user = User::where('email', '=', $input['email'])->first();
-                Credentials::create($user);
+                Activation::create($user);
 
                 //Set role for user
                 $role = Credentials::getRoleRepository()->findByName('User');
