@@ -93,8 +93,6 @@ class CredentialsServiceProvider extends ServiceProvider
      */
     public function setupRoutes(Router $router)
     {
-        require __DIR__.'/Http/filters.php';
-
         $router->group(['namespace' => 'GrahamCampbell\Credentials\Http\Controllers'], function (Router $router) {
             require __DIR__.'/Http/routes.php';
         });
