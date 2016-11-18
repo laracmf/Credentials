@@ -80,7 +80,7 @@ class ResetController extends AbstractController
         $this->throttler->hit();
 
         try {
-            $user = Credentials::getUserProvider()->findByLogin($input['email']);
+            $user = Credentials::getUserRepository()->findByLogin($input['email']);
 
             $code = $user->getResetPasswordCode();
 
@@ -119,7 +119,7 @@ class ResetController extends AbstractController
         }
 
         try {
-            $user = Credentials::getUserProvider()->findById($id);
+            $user = Credentials::getUserRepository()->findById($id);
 
             $password = Str::random();
 

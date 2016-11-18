@@ -71,7 +71,7 @@ class ActivationController extends AbstractController
         }
 
         try {
-            $user = Credentials::getUserProvider()->findById($id);
+            $user = Credentials::getUserRepository()->findById($id);
 
             if (!$user->attemptActivation($code)) {
                 return Redirect::to(Config::get('credentials.home', '/'))
@@ -118,7 +118,7 @@ class ActivationController extends AbstractController
         $this->throttler->hit();
 
         try {
-            $user = Credentials::getUserProvider()->findByLogin($input['email']);
+            $user = Credentials::getUserRepository()->findByLogin($input['email']);
 
             if ($user->activated) {
                 return Redirect::route('account.resend')->withInput()
