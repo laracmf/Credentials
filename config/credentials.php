@@ -48,7 +48,7 @@ return [
     |
     */
 
-    'revision' => 'GrahamCampbell\Credentials\Models\Revision',
+    'revision' => GrahamCampbell\Credentials\Models\Revision::class,
 
     /*
     |--------------------------------------------------------------------------

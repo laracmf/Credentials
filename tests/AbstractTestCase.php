@@ -11,6 +11,7 @@
 
 namespace GrahamCampbell\Tests\Credentials;
 
+use Cartalyst\Sentinel\Laravel\SentinelServiceProvider;
 use GrahamCampbell\Binput\BinputServiceProvider;
 use GrahamCampbell\Credentials\CredentialsServiceProvider;
 use GrahamCampbell\Security\SecurityServiceProvider;
@@ -39,6 +40,7 @@ abstract class AbstractTestCase extends AbstractPackageTestCase
             SecurityServiceProvider::class,
             BinputServiceProvider::class,
             ThrottleServiceProvider::class,
+            SentinelServiceProvider::class
         ];
     }
 

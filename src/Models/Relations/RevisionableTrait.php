@@ -214,7 +214,7 @@ trait RevisionableTrait
      *
      * @return int|null
      */
-    protected function getUserId()
+    public function getUserId()
     {
         if (Credentials::check()) {
             return Credentials::getUser()->id;

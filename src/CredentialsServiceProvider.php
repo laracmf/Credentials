@@ -52,14 +52,17 @@ class CredentialsServiceProvider extends ServiceProvider
     protected function setupPackage()
     {
         $configuration = realpath(__DIR__.'/../config/credentials.php');
+        $sentinel = realpath(__DIR__.'/../config/sentinel.php');
         $migrations = realpath(__DIR__.'/../migrations');
 
         $this->publishes([
             $configuration => config_path('credentials.php'),
             $migrations    => base_path('database/migrations'),
+            $sentinel      => config_path('sentinel.php')
         ]);
 
         $this->mergeConfigFrom($configuration, 'credentials');
+        $this->mergeConfigFrom($sentinel, 'sentinel');
 
         $this->loadViewsFrom(realpath(__DIR__.'/../views'), 'credentials');
     }
@@ -143,7 +146,7 @@ class CredentialsServiceProvider extends ServiceProvider
     protected function registerUserRepository()
     {
         $this->app->singleton('userrepository', function ($app) {
-            $model = $app['config']['sentry.users.model'];
+            $model = config('sentinel.roles.model');
             $user = new $model();
 
             $validator = $app['validator'];
@@ -162,7 +165,7 @@ class CredentialsServiceProvider extends ServiceProvider
     protected function registerGroupRepository()
     {
         $this->app->singleton('grouprepository', function ($app) {
-            $model = $app['config']['sentry.groups.model'];
+            $model = config('sentinel.roles.model');
             $group = new $model();
 
             $validator = $app['validator'];
@@ -181,7 +184,7 @@ class CredentialsServiceProvider extends ServiceProvider
     protected function registerCredentials()
     {
         $this->app->singleton('credentials', function ($app) {
-            $sentinel = $app['sentry'];
+            $sentinel = $app['sentinel'];
             $decorator = $app->make(PresenterDecorator::class);
 
             return new Credentials($sentinel, $decorator);

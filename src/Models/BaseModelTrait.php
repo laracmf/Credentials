@@ -80,12 +80,13 @@ trait BaseModelTrait
      * Update an existing model.
      *
      * @param array $input
+     * @param array $options
      *
      * @throws \Exception
      *
      * @return bool|int
      */
-    public function update(array $input = [])
+    public function update(array $input = [], array $options = [])
     {
         DB::beginTransaction();
 
