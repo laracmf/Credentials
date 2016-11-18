@@ -19,6 +19,8 @@ use GrahamCampbell\Credentials\Models\Relations\RevisionableTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
 use McCool\LaravelAutoPresenter\HasPresenter;
+use Cartalyst\Sentinel\Users\IlluminateUserRepository;
+use Psy\Exception\RuntimeException;
 
 /**
  * This is the user model class.
@@ -187,5 +189,22 @@ class User extends EloquentUser implements HasPresenter
         }
 
         return $this->access[$key];
+    }
+
+    /**
+     * Hash string.
+     *
+     * @param  string  $string
+     * @return string
+     * @throws RuntimeException
+     */
+    public function hash($string)
+    {
+        if ( ! Credentials::getUserRepository()->getHasher())
+        {
+            throw new \RuntimeException("A hasher has not been provided for the user.");
+        }
+
+        return Credentials::getUserRepository()->getHasher()->hash($string);
     }
 }
