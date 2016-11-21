@@ -17,7 +17,6 @@ use GrahamCampbell\Binput\Facades\Binput;
 use GrahamCampbell\Credentials\Facades\Credentials;
 use GrahamCampbell\Credentials\Facades\UserRepository;
 use GrahamCampbell\Credentials\Http\Middleware\SentryThrottle;
-use GrahamCampbell\Throttle\Throttlers\ThrottlerInterface;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
@@ -32,23 +31,12 @@ use Cartalyst\Sentinel\Laravel\Facades\Activation;
 class LoginController extends AbstractController
 {
     /**
-     * The throttler instance.
-     *
-     * @var \GrahamCampbell\Throttle\Throttlers\ThrottlerInterface
-     */
-    protected $throttler;
-
-    /**
      * Create a new instance.
-     *
-     * @param \GrahamCampbell\Throttle\Throttlers\ThrottlerInterface $throttler
      *
      * @return void
      */
-    public function __construct(ThrottlerInterface $throttler)
+    public function __construct()
     {
-        $this->throttler = $throttler;
-
         $this->setPermissions([
             'getLogout' => 'user',
         ]);
@@ -86,8 +74,6 @@ class LoginController extends AbstractController
         if ($val->fails()) {
             return Redirect::route('account.login')->withInput()->withErrors($val->errors());
         }
-
-        $this->throttler->hit();
 
         try {
             Credentials::authenticate($input, $remember);

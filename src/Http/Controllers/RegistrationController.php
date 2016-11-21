@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
+use Webpatser\Uuid\Uuid;
 
 /**
  * This is the registration controller class.
@@ -28,27 +29,6 @@ use Illuminate\Support\Facades\View;
  */
 class RegistrationController extends AbstractController
 {
-    /**
-     * The throttler instance.
-     *
-     * @var \GrahamCampbell\Throttle\Throttlers\ThrottlerInterface
-     */
-    protected $throttler;
-
-    /**
-     * Create a new instance.
-     *
-     * @param \GrahamCampbell\Throttle\Throttlers\ThrottlerInterface $throttler
-     *
-     * @return void
-     */
-    public function __construct(ThrottlerInterface $throttler)
-    {
-        $this->throttler = $throttler;
-
-        parent::__construct();
-    }
-
     /**
      * Display the registration form.
      *
@@ -77,8 +57,6 @@ class RegistrationController extends AbstractController
             return Redirect::route('account.register')->withInput()->withErrors($val->errors());
         }
 
-        $this->throttler->hit();
-
         try {
             unset($input['password_confirmation']);
 
@@ -95,23 +73,26 @@ class RegistrationController extends AbstractController
                     $message->to($mail['email'])->subject($mail['subject']);
                 });
 
-                $user->attemptActivation($user->getActivationCode());
-                $user->addGroup(Credentials::getGroupProvider()->findByName('Users'));
+                Credentials::getActivationRepository()->create($user);
+
+                //Set role for user
+                $role = Credentials::getRoleRepository()->findByName('User');
+                $role->users()->attach($user);
 
                 return Redirect::to(Config::get('credentials.home', '/'))
                     ->with('success', 'Your account has been created successfully. You may now login.');
             }
 
-            $code = $user->getActivationCode();
+            $user->confirm_token = Uuid::generate(4);
+            $user->save();
 
             $mail = [
-                'url'     => URL::to(Config::get('credentials.home', '/')),
-                'link'    => URL::route('account.activate', ['id' => $user->id, 'code' => $code]),
+                'url'     => route('register.complete', ['confirm_token' =>  $user->confirm_token]),
                 'email'   => $user->getLogin(),
-                'subject' => Config::get('app.name').' - Welcome',
+                'subject' => 'Complete your registration'
             ];
 
-            Mail::queue('credentials::emails.welcome', $mail, function ($message) use ($mail) {
+            Mail::queue('emails.completeRegistration', $mail, function ($message) use ($mail) {
                 $message->to($mail['email'])->subject($mail['subject']);
             });
 
