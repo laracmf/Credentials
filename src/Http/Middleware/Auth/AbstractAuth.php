@@ -78,11 +78,26 @@ abstract class AbstractAuth
                 ->with('error', 'You must be logged in to perform that action.');
         }
 
-        if (!$this->credentials->hasAccess($level = $this->level())) {
-            $this->logger->warning(
-                'User tried to access a page without permission',
-                ['path' => $request->path(), 'permission' => $level]
+        $level = $this->level();
+        $role = $this->credentials->findRoleBySlug($level);
+
+        if ($role) {
+            $permissions = array_filter(
+                $role->permissions,
+                function ($value) {
+                    return $value;
+                }
             );
+
+            if (!$this->credentials->hasAccess(array_keys($permissions))) {
+                $this->logger->warning(
+                    'User tried to access a page without permission',
+                    ['path' => $request->path(), 'permission' => $level]
+                );
+
+                throw new AccessDeniedHttpException(ucfirst($level).' Permissions Are Required');
+            }
+        } else {
             throw new AccessDeniedHttpException(ucfirst($level).' Permissions Are Required');
         }
 

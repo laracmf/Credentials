@@ -218,8 +218,8 @@ trait RevisionableTrait
     {
         if (Credentials::check()) {
             return Credentials::getUser()->id;
-        } elseif (isset($this['user_id']) && $this['user_id']) {
-            return $this['user_id'];
+        } elseif (isset($this['id']) && $this['id']) {
+            return $this['id'];
         }
     }
 

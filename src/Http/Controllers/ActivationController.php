@@ -70,12 +70,20 @@ class ActivationController extends AbstractController
         try {
             $user = Credentials::getUserRepository()->findById($id);
 
-            if (!$user->attemptActivation($code)) {
+            if ($user->confirm_token !== $code) {
                 return Redirect::to(Config::get('credentials.home', '/'))
                     ->with('error', 'There was a problem activating this account. Please contact support.');
             }
 
-            $user->addGroup(Credentials::getGroupProvider()->findByName('Users'));
+            $user->confirm_token = null;
+
+            $user->save();
+
+            Credentials::getActivationRepository()->create($user);
+
+            //Set role for user
+            $role = Credentials::getRoleRepository()->findByName('User');
+            $role->users()->attach($user);
 
             return Redirect::route('account.login')
                 ->with('success', 'Your account has been activated successfully. You may now login.');

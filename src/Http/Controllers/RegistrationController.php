@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
-use Webpatser\Uuid\Uuid;
 
 /**
  * This is the registration controller class.
@@ -82,17 +81,17 @@ class RegistrationController extends AbstractController
                 return Redirect::to(Config::get('credentials.home', '/'))
                     ->with('success', 'Your account has been created successfully. You may now login.');
             }
-
             $user->confirm_token = Uuid::generate(4);
             $user->save();
 
             $mail = [
-                'url'     => route('register.complete', ['confirm_token' =>  $user->confirm_token]),
+                'url'     => URL::to(Config::get('credentials.home', '/')),
+                'link'    => URL::route('account.activate', ['id' => $user->id, 'code' => $user->confirm_token]),
                 'email'   => $user->getLogin(),
-                'subject' => 'Complete your registration'
+                'subject' => Config::get('app.name').' - Welcome',
             ];
 
-            Mail::queue('emails.completeRegistration', $mail, function ($message) use ($mail) {
+            Mail::queue('credentials::emails.welcome', $mail, function ($message) use ($mail) {
                 $message->to($mail['email'])->subject($mail['subject']);
             });
 
