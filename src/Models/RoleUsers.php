@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace GrahamCampbell\Credentials\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

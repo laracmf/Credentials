@@ -11,7 +11,7 @@
 
 namespace GrahamCampbell\Credentials\Http\Controllers;
 
-use App\Services\UsersService;
+use GrahamCampbell\Credentials\Services\UsersService;
 use Carbon\Carbon;
 use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
 use DateTime;
@@ -19,7 +19,6 @@ use GrahamCampbell\Binput\Facades\Binput;
 use GrahamCampbell\Credentials\Facades\Credentials;
 use GrahamCampbell\Credentials\Facades\GroupRepository;
 use GrahamCampbell\Credentials\Facades\UserRepository;
-use GrahamCampbell\Credentials\Models\Role;
 use GrahamCampbell\Credentials\Models\User;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;

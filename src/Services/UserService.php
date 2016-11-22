@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace GrahamCampbell\Credentials\Services;
 
-use App\RoleUsers;
+use GrahamCampbell\Credentials\Models\RoleUsers;
 use GrahamCampbell\Credentials\Models\User;
 
 class UsersService
