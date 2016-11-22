@@ -11,6 +11,7 @@
 
 namespace GrahamCampbell\Credentials\Http\Controllers;
 
+use App\Services\UsersService;
 use Carbon\Carbon;
 use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
 use DateTime;
@@ -36,12 +37,19 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class UserController extends AbstractController
 {
     /**
-     * Create a new instance.
+     * Users service instance.
      *
-     * @return void
+     * @var UsersService
      */
-    public function __construct()
+    public $usersService;
+
+    /**
+     * Create a new instance.
+     */
+    public function __construct(UsersService $usersService)
     {
+        $this->usersService = $usersService;
+
         $this->setPermissions([
             'index'   => 'mod|admin',
             'create'  => 'admin',
@@ -163,7 +171,7 @@ class UserController extends AbstractController
             }
         }
 
-        $roles = $user->roles();
+        $roles = $this->usersService->getRoles($user);
 
         if (!$roles) {
             $roles = 'No Group Memberships';

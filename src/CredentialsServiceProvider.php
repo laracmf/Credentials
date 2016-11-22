@@ -11,6 +11,7 @@
 
 namespace GrahamCampbell\Credentials;
 
+use App\Services\UsersService;
 use GrahamCampbell\Credentials\Http\Controllers\ActivationController;
 use GrahamCampbell\Credentials\Http\Controllers\LoginController;
 use GrahamCampbell\Credentials\Http\Controllers\RegistrationController;
@@ -117,6 +118,19 @@ class CredentialsServiceProvider extends ServiceProvider
         $this->registerRegistrationController();
         $this->registerResetController();
         $this->registerActivationController();
+        $this->registerUsersService();
+    }
+
+    /**
+     * Register user service.
+     *
+     * @return void
+     */
+    protected function registerUsersService()
+    {
+        $this->app->bind(UsersService::class, function () {
+            return new UsersService();
+        });
     }
 
     /**
