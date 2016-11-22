@@ -53,7 +53,6 @@ Users
         </tbody>
     </table>
 </div>
-{!! $links !!}
 @stop
 
 @section('bottom')

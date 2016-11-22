@@ -11,6 +11,7 @@
 
 namespace GrahamCampbell\Credentials\Http\Controllers;
 
+use Carbon\Carbon;
 use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
 use DateTime;
 use GrahamCampbell\Binput\Facades\Binput;
@@ -18,6 +19,7 @@ use GrahamCampbell\Credentials\Facades\Credentials;
 use GrahamCampbell\Credentials\Facades\GroupRepository;
 use GrahamCampbell\Credentials\Facades\UserRepository;
 use GrahamCampbell\Credentials\Models\Role;
+use GrahamCampbell\Credentials\Models\User;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
@@ -64,8 +66,9 @@ class UserController extends AbstractController
     public function index()
     {
         $users = Credentials::getUserRepository()->paginate();
+        $links = UserRepository::links();
 
-        return View::make('credentials::users.index', compact('users'));
+        return View::make('credentials::users.index', compact('users', 'links'));
     }
 
     /**
@@ -141,11 +144,11 @@ class UserController extends AbstractController
      */
     public function show($id)
     {
-        $user = UserRepository::find($id);
+        $user = User::find($id);
         $this->checkUser($user);
 
         if ($activation = Credentials::getActivationRepository()->completed($user)) {
-            $activated = html_ago($activation->completed_at);
+            $activated = html_ago(Carbon::createFromFormat('Y-m-d H:m:s', $activation->completed_at));
         } else {
             if (Credentials::hasAccess(
                     [
@@ -160,15 +163,9 @@ class UserController extends AbstractController
             }
         }
 
-        $roles = Role::all();
+        $roles = $user->roles();
 
-        if (count($roles) >= 1) {
-            $data = [];
-            foreach ($roles as $role) {
-                $data[] = $role->slug;
-            }
-            $roles = implode(', ', $data);
-        } else {
+        if (!$roles) {
             $roles = 'No Group Memberships';
         }
 
