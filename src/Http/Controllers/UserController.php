@@ -172,7 +172,9 @@ class UserController extends AbstractController
 
         $roles = $this->usersService->getRoles($user);
 
-        if (!$roles) {
+        if ($roles) {
+            $roles = implode(', ', $roles);
+        } else {
             $roles = 'No Group Memberships';
         }
 
