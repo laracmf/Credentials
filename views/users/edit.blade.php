@@ -26,10 +26,10 @@
             <div class="pull-right">
                 &nbsp;<a class="btn btn-success" href="{!! URL::route('users.show', array('users' => $user->id)) !!}"><i class="fa fa-file-text"></i> Show User</a>
                 &nbsp;<a class="btn btn-warning" href="#suspend_user" data-toggle="modal" data-target="#suspend_user"><i class="fa fa-ban"></i> Suspend User</a>
-                @auth('admin')
-                &nbsp;<a class="btn btn-default" href="#reset_user" data-toggle="modal" data-target="#reset_user"><i class="fa fa-lock"></i> Reset Password</a>
-                &nbsp;<a class="btn btn-danger" href="#delete_user" data-toggle="modal" data-target="#delete_user"><i class="fa fa-times"></i> Delete</a>
-                @endauth
+                @if(isAdmin())
+                    <a class="btn btn-default" href="#reset_user" data-toggle="modal" data-target="#reset_user"><i class="fa fa-lock"></i> Reset Password</a>
+                    <a class="btn btn-danger" href="#delete_user" data-toggle="modal" data-target="#delete_user"><i class="fa fa-times"></i> Delete</a>
+                @endif
             </div>
         </div>
     </div>
@@ -54,10 +54,10 @@
 
 @section('bottom')
     @include('credentials::users.suspend')
-    @auth('admin')
-    @include('credentials::users.reset')
-    @include('credentials::users.delete')
-    @endauth
+    @if(isAdmin())
+        @include('credentials::users.reset')
+        @include('credentials::users.delete')
+    @endif
 @stop
 
 @section('css')

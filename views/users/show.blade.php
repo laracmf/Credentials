@@ -24,25 +24,25 @@
     </div>
     <div class="col-lg-6">
         <div class="pull-right visible-lg">
-            @auth('admin')
+            @if(isAdmin())
                 &nbsp;<a class="btn btn-info" href="{!! URL::route('users.edit', array('users' => $user->id)) !!}"><i class="fa fa-pencil-square-o"></i> Edit User</a>
-            @endauth
+            @endif
             &nbsp;<a class="btn btn-warning" href="#suspend_user" data-toggle="modal" data-target="#suspend_user"><i class="fa fa-ban"></i> Suspend User</a>
-            @auth('admin')
+            @if(isAdmin())
                 &nbsp;<a class="btn btn-default" href="#reset_user" data-toggle="modal" data-target="#reset_user"><i class="fa fa-lock"></i> Reset Password</a>
                 &nbsp;<a class="btn btn-danger" href="#delete_user" data-toggle="modal" data-target="#delete_user"><i class="fa fa-times"></i> Delete</a>
-            @endauth
+            @endif
         </div>
     </div>
     <div class="col-lg-6 hidden-lg">
-        @auth('admin')
+        @if(isAdmin())
             &nbsp;<a class="btn btn-info" href="{!! URL::route('users.edit', array('users' => $user->id)) !!}"><i class="fa fa-pencil-square-o"></i> Edit User</a>
-        @endauth
+        @endif
         &nbsp;<a class="btn btn-warning" href="#suspend_user" data-toggle="modal" data-target="#suspend_user"><i class="fa fa-ban"></i> Suspend User</a>
-        @auth('admin')
+        @if(isAdmin())
             &nbsp;<a class="btn btn-default" href="#reset_user" data-toggle="modal" data-target="#reset_user"><i class="fa fa-lock"></i> Reset Password</a>
             &nbsp;<a class="btn btn-danger" href="#delete_user" data-toggle="modal" data-target="#delete_user"><i class="fa fa-times"></i> Delete</a>
-        @endauth
+        @endif
     </div>
 </div>
 <hr>
@@ -91,11 +91,11 @@
 
 @section('bottom')
 @include('credentials::users.suspend')
-@auth('admin')
+@if(isAdmin())
     @if (Config::get('credentials.activation'))
         @include('credentials::users.resend')
     @endif
     @include('credentials::users.reset')
     @include('credentials::users.delete')
-@endauth
+@endif
 @stop
