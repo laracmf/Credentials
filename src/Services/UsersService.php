@@ -17,7 +17,7 @@ class UsersService
     public function getRoles(User $user)
     {
         $roles = RoleUsers::join('users', 'users.id', '=', 'role_users.user_id')
-            ->join('roles', 'role.id', '=', 'role_users.role_id')
+            ->join('roles', 'roles.id', '=', 'role_users.role_id')
             ->where('users.id', '=', $user->id)
             ->get();
 
