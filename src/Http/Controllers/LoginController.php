@@ -71,12 +71,17 @@ class LoginController extends AbstractController
         $rules['password'] = 'required|min:6';
 
         $val = UserRepository::validate($input, $rules, true);
+
         if ($val->fails()) {
             return Redirect::route('account.login')->withInput()->withErrors($val->errors());
         }
 
         try {
-            Credentials::authenticate($input, $remember);
+            if (!Credentials::authenticate($input, $remember)) {
+                return Redirect::route('account.login')
+                    ->withInput()
+                    ->with('error', 'Bad credentials. Please check login and password.');
+            }
         } catch (NotActivatedException $e) {
             if (Config::get('credentials::activation')) {
                 return Redirect::route('account.login')->withInput()->withErrors($val->errors())
