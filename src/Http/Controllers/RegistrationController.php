@@ -61,6 +61,9 @@ class RegistrationController extends AbstractController
 
             $user = Credentials::register($input);
 
+            $activationResponse = Credentials::getActivationRepository()->create($user);
+            $code = $activationResponse ? $activationResponse->code : '';
+
             if (!Config::get('credentials.activation')) {
                 $mail = [
                     'url'     => URL::to(Config::get('credentials.home', '/')),
@@ -72,7 +75,7 @@ class RegistrationController extends AbstractController
                     $message->to($mail['email'])->subject($mail['subject']);
                 });
 
-                Credentials::getActivationRepository()->create($user);
+                Credentials::getActivationRepository()->complete($user, $code);
 
                 //Set role for user
                 $role = Credentials::getRoleRepository()->findByName('User');
@@ -81,12 +84,15 @@ class RegistrationController extends AbstractController
                 return Redirect::to(Config::get('credentials.home', '/'))
                     ->with('success', 'Your account has been created successfully. You may now login.');
             }
-            $user->confirm_token = Uuid::generate(4);
+
+            $activationResponse = Credentials::getActivationRepository()->create($user);
+            $code = $activationResponse ? $activationResponse->code : '';
+
             $user->save();
 
             $mail = [
                 'url'     => URL::to(Config::get('credentials.home', '/')),
-                'link'    => URL::route('account.activate', ['id' => $user->id, 'code' => $user->confirm_token]),
+                'link'    => URL::route('account.activate', ['id' => $user->id, 'code' => $code]),
                 'email'   => $user->getLogin(),
                 'subject' => Config::get('app.name').' - Welcome',
             ];

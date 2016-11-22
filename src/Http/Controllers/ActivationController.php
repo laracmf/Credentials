@@ -15,7 +15,6 @@ use Cartalyst\Sentinel\Checkpoints\NotActivatedException;
 use GrahamCampbell\Binput\Facades\Binput;
 use GrahamCampbell\Credentials\Facades\Credentials;
 use GrahamCampbell\Credentials\Facades\UserRepository;
-use GrahamCampbell\Throttle\Throttlers\ThrottlerInterface;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
@@ -40,14 +39,10 @@ class ActivationController extends AbstractController
     /**
      * Create a new instance.
      *
-     * @param \GrahamCampbell\Throttle\Throttlers\ThrottlerInterface $throttler
-     *
      * @return void
      */
-    public function __construct(ThrottlerInterface $throttler)
+    public function __construct()
     {
-        $this->throttler = $throttler;
-
         parent::__construct();
     }
 
@@ -70,19 +65,13 @@ class ActivationController extends AbstractController
         try {
             $user = Credentials::getUserRepository()->findById($id);
 
-            if ($user->confirm_token !== $code) {
+            if (!Credentials::getActivationRepository()->complete($user, $code)) {
                 return Redirect::to(Config::get('credentials.home', '/'))
                     ->with('error', 'There was a problem activating this account. Please contact support.');
             }
 
-            $user->confirm_token = null;
-
-            $user->save();
-
-            Credentials::getActivationRepository()->create($user);
-
             //Set role for user
-            $role = Credentials::getRoleRepository()->findByName('User');
+            $role = Credentials::getRoleRepository()->findByName('user');
             $role->users()->attach($user);
 
             return Redirect::route('account.login')
@@ -120,21 +109,17 @@ class ActivationController extends AbstractController
             return Redirect::route('account.resend')->withInput()->withErrors($val->errors());
         }
 
-        $this->throttler->hit();
-
         try {
             $user = Credentials::getUserRepository()->findByName($input['email']);
 
-            if ($user->activated) {
+            if ($activation = Credentials::getActivationRepository()->completed($user)) {
                 return Redirect::route('account.resend')->withInput()
                     ->with('error', 'That user is already activated.');
             }
 
-            $code = $user->getActivationCode();
-
             $mail = [
                 'url'     => URL::to(Config::get('credentials.home', '/')),
-                'link'    => URL::route('account.activate', ['id' => $user->id, 'code' => $code]),
+                'link'    => URL::route('account.activate', ['id' => $user->id, 'code' => $activation->code]),
                 'email'   => $user->getLogin(),
                 'subject' => Config::get('app.name').' - Activation',
             ];
