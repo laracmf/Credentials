@@ -32,13 +32,6 @@ class User extends EloquentUser implements HasPresenter
     use BaseModelTrait, RevisionableTrait, SoftDeletes;
 
     /**
-     * The table the users are stored in.
-     *
-     * @var string
-     */
-    protected $table = 'users';
-
-    /**
      * The model name.
      *
      * @var string

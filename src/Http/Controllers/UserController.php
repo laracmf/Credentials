@@ -17,6 +17,7 @@ use GrahamCampbell\Binput\Facades\Binput;
 use GrahamCampbell\Credentials\Facades\Credentials;
 use GrahamCampbell\Credentials\Facades\GroupRepository;
 use GrahamCampbell\Credentials\Facades\UserRepository;
+use GrahamCampbell\Credentials\Models\Role;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
@@ -40,13 +41,13 @@ class UserController extends AbstractController
     public function __construct()
     {
         $this->setPermissions([
-            'index'   => 'mod',
+            'index'   => 'mod|admin',
             'create'  => 'admin',
             'store'   => 'admin',
-            'show'    => 'mod',
+            'show'    => 'mod|admin',
             'edit'    => 'admin',
             'update'  => 'admin',
-            'suspend' => 'mod',
+            'suspend' => 'mod|admin',
             'reset'   => 'admin',
             'resend'  => 'admin',
             'destroy' => 'admin',
@@ -62,10 +63,9 @@ class UserController extends AbstractController
      */
     public function index()
     {
-        $users = UserRepository::paginate();
-        $links = UserRepository::links();
+        $users = Credentials::getUserRepository()->paginate();
 
-        return View::make('credentials::users.index', compact('users', 'links'));
+        return View::make('credentials::users.index', compact('users'));
     }
 
     /**
@@ -144,34 +144,35 @@ class UserController extends AbstractController
         $user = UserRepository::find($id);
         $this->checkUser($user);
 
-        if ($user->activated_at) {
-            $activated = html_ago($user->activated_at);
+        if ($activation = Credentials::getActivationRepository()->completed($user)) {
+            $activated = html_ago($activation->completed_at);
         } else {
-            if (Credentials::hasAccess('admin') && Config::get('credentials.activation')) {
+            if (Credentials::hasAccess(
+                    [
+                        'user.create',
+                        'user.delete',
+                        'user.view',
+                        'user.update'
+                    ]) && Config::get('credentials.activation')) {
                 $activated = 'No - <a href="#resend_user" data-toggle="modal" data-target="#resend_user">Resend Email</a>';
             } else {
                 $activated = 'Not Activated';
             }
         }
 
-        if (Credentials::getThrottleProvider()->findByUserId($id)->isSuspended()) {
-            $suspended = 'Currently Suspended';
-        } else {
-            $suspended = 'Not Suspended';
-        }
+        $roles = Role::all();
 
-        $groups = $user->getGroups();
-        if (count($groups) >= 1) {
+        if (count($roles) >= 1) {
             $data = [];
-            foreach ($groups as $group) {
-                $data[] = $group->name;
+            foreach ($roles as $role) {
+                $data[] = $role->slug;
             }
-            $groups = implode(', ', $data);
+            $roles = implode(', ', $data);
         } else {
-            $groups = 'No Group Memberships';
+            $roles = 'No Group Memberships';
         }
 
-        return View::make('credentials::users.show', compact('user', 'groups', 'activated', 'suspended'));
+        return View::make('credentials::users.show', compact('user', 'roles', 'activated'));
     }
 
     /**

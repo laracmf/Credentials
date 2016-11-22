@@ -57,14 +57,13 @@
                 <p><strong>Last Name:</strong> {!! $user->last_name !!} </p>
             @endif
             <p><strong>Email:</strong> {!! $user->email !!}</p>
-            <p><strong>Groups:</strong> {!! $groups !!}</strong>
+            <p><strong>Roles:</strong> {!! $roles !!}</strong>
         </div>
         <div class="col-xs-6">
             <div class="pull-right">
                 <p><em>Account Created: {!! html_ago($user->created_at) !!}</em></p>
                 <p><em>Account Updated: {!! html_ago($user->updated_at) !!}</em></p>
                 <p><em>Account Activated: {!! $activated !!}</em></p>
-                <p><em>Account Suspended: {!! $suspended !!}</em></p>
             </div>
         </div>
     </div>
