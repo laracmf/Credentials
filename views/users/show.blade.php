@@ -2,64 +2,96 @@
 
 @section('title')
     <?php $__navtype = 'admin'; ?>
-    Users
+    {{ $user->name }}
 @stop
 
 @section('top')
     <div class="page-header">
-        <h1>Users</h1>
+        <h1>{{ $user->name }}</h1>
     </div>
 @stop
 
 @section('content')
     <div class="row">
-        <div class="col-xs-8">
-            <p class="lead">Here is a list of all the current users:</p>
+        <div class="col-lg-6">
+            <p class="lead">
+                @if($user->id == Credentials::getUser()->id)
+                    Currently showing your profile:
+                @else
+                    Currently showing {!! $user->name !!}'s profile:
+                @endif
+            </p>
         </div>
-        @if(isAdmin())
-            <div class="col-xs-4">
-                <div class="pull-right">
-                    <a class="btn btn-primary" href="{!! URL::route('users.create') !!}"><i class="fa fa-user"></i> New User</a>
-                </div>
+        <div class="col-lg-6">
+            <div class="pull-right visible-lg">
+                @if(isAdmin())
+                    &nbsp;<a class="btn btn-info" href="{!! URL::route('users.edit', array('users' => $user->id)) !!}"><i class="fa fa-pencil-square-o"></i> Edit User</a>
+                @endif
+                &nbsp;<a class="btn btn-warning" href="#suspend_user" data-toggle="modal" data-target="#suspend_user"><i class="fa fa-ban"></i> Suspend User</a>
+                @if(isAdmin())
+                    &nbsp;<a class="btn btn-default" href="#reset_user" data-toggle="modal" data-target="#reset_user"><i class="fa fa-lock"></i> Reset Password</a>
+                    &nbsp;<a class="btn btn-danger" href="#delete_user" data-toggle="modal" data-target="#delete_user"><i class="fa fa-times"></i> Delete</a>
+                @endif
             </div>
-        @endif
+        </div>
+        <div class="col-lg-6 hidden-lg">
+            @if(isAdmin())
+                &nbsp;<a class="btn btn-info" href="{!! URL::route('users.edit', array('users' => $user->id)) !!}"><i class="fa fa-pencil-square-o"></i> Edit User</a>
+            @endif
+            @if(isAdmin())
+                &nbsp;<a class="btn btn-default" href="#reset_user" data-toggle="modal" data-target="#reset_user"><i class="fa fa-lock"></i> Reset Password</a>
+                &nbsp;<a class="btn btn-danger" href="#delete_user" data-toggle="modal" data-target="#delete_user"><i class="fa fa-times"></i> Delete</a>
+            @endif
+        </div>
     </div>
     <hr>
-    <div class="well">
-        <table class="table">
-            <thead>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Options</th>
-            </thead>
-            <tbody>
-            @foreach ($users as $user)
-                <tr>
-                    <td>{!! $user->name !!}</td>
-                    <td>{!! $user->email !!}</td>
-                    <td>
-                        &nbsp;<a class="btn btn-success" href="{!! URL::route('users.show', array('users' => $user->id)) !!}"><i class="fa fa-file-text"></i> Show</a>
-                        @if(isAdmin())
-                            &nbsp;<a class="btn btn-info" href="{!! URL::route('users.edit', array('users' => $user->id)) !!}"><i class="fa fa-pencil-square-o"></i> Edit</a>
-                        @endif
-                        &nbsp;<a class="btn btn-warning" href="#suspend_user_{!! $user->id !!}" data-toggle="modal" data-target="#suspend_user_{!! $user->id !!}"><i class="fa fa-ban"></i> Suspend</a>
-                        @if(isAdmin())
-                            &nbsp;<a class="btn btn-default" href="#reset_user_{!! $user->id !!}" data-toggle="modal" data-target="#reset_user_{!! $user->id !!}"><i class="fa fa-lock"></i> Reset Password</a>
-                            &nbsp;<a class="btn btn-danger" href="#delete_user_{!! $user->id !!}" data-toggle="modal" data-target="#delete_user_{!! $user->id !!}"><i class="fa fa-times"></i> Delete</a>
-                        @endif
-                    </td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
+    <h3>User Profile</h3>
+    <div class="well clearfix">
+        <div class="hidden-xs">
+            <div class="col-xs-6">
+                @if ($user->first_name)
+                    <p><strong>First Name:</strong> {!! $user->first_name !!} </p>
+                @endif
+                @if ($user->last_name)
+                    <p><strong>Last Name:</strong> {!! $user->last_name !!} </p>
+                @endif
+                <p><strong>Email:</strong> {!! $user->email !!}</p>
+                <p><strong>Roles:</strong> {!! $roles !!}</strong>
+            </div>
+            <div class="col-xs-6">
+                <div class="pull-right">
+                    <p><em>Account Created: {!! html_ago($user->created_at) !!}</em></p>
+                    <p><em>Account Updated: {!! html_ago($user->updated_at) !!}</em></p>
+                    <p><em>Account Activated: {!! $activated !!}</em></p>
+                </div>
+            </div>
+        </div>
+        <div class="visible-xs">
+            <div class="col-xs-12">
+                @if ($user->first_name)
+                    <p><strong>First Name:</strong> {!! $user->first_name !!} </p>
+                @endif
+                @if ($user->last_name)
+                    <p><strong>Last Name:</strong> {!! $user->last_name !!} </p>
+                @endif
+                <p><strong>Email:</strong> {!! $user->email !!}</p>
+                <p><strong>Roles:</strong> {!! $roles !!}</p>
+                <p><strong>Account Created:</strong> {!! html_ago($user->created_at) !!}</p>
+                <p><strong>Account Updated:</strong> {!! html_ago($user->updated_at) !!}</p>
+                <p><strong>Account Activated:</strong> {!! $activated !!}</p>
+            </div>
+        </div>
     </div>
-    {!! $links !!}
+    <hr>
+    @include('credentials::users.history')
 @stop
 
 @section('bottom')
-    @include('credentials::users.suspends')
     @if(isAdmin())
-        @include('credentials::users.resets')
-        @include('credentials::users.deletes')
+        @if (Config::get('credentials.activation'))
+            @include('credentials::users.resend')
+        @endif
+        @include('credentials::users.reset')
+        @include('credentials::users.delete')
     @endif
 @stop
