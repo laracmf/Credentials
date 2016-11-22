@@ -17,7 +17,6 @@ use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
 use DateTime;
 use GrahamCampbell\Binput\Facades\Binput;
 use GrahamCampbell\Credentials\Facades\Credentials;
-use GrahamCampbell\Credentials\Facades\GroupRepository;
 use GrahamCampbell\Credentials\Facades\UserRepository;
 use GrahamCampbell\Credentials\Models\User;
 use Illuminate\Support\Facades\Config;
@@ -85,8 +84,6 @@ class UserController extends AbstractController
      */
     public function create()
     {
-        $groups = GroupRepository::index();
-
         return View::make('credentials::users.create', compact('groups'));
     }
 
@@ -116,7 +113,6 @@ class UserController extends AbstractController
         try {
             $user = UserRepository::create($input);
 
-            $groups = GroupRepository::index();
             foreach ($groups as $group) {
                 if (Binput::get('group_'.$group->id) === 'on') {
                     $user->addGroup($group);
@@ -190,12 +186,13 @@ class UserController extends AbstractController
      */
     public function edit($id)
     {
-        $user = UserRepository::find($id);
+        $user = User::find($id);
         $this->checkUser($user);
 
-        $groups = GroupRepository::index();
+        $roles = $this->usersService->getRoles($user);
+        $roles = !$roles ?: implode(', ', $roles);
 
-        return View::make('credentials::users.edit', compact('user', 'groups'));
+        return View::make('credentials::users.edit', compact('user', 'roles'));
     }
 
     /**
@@ -222,19 +219,19 @@ class UserController extends AbstractController
 
         $user->update($input);
 
-        $groups = GroupRepository::index();
+        $roles = $this->usersService->getRoles($user);
 
         $changed = false;
 
-        foreach ($groups as $group) {
-            if ($user->inGroup($group)) {
-                if (Binput::get('group_'.$group->id) !== 'on') {
-                    $user->removeGroup($group);
+        foreach ($roles as $role) {
+            if ($user->inGroup($role)) {
+                if (Binput::get('group_'.$role->id) !== 'on') {
+                    $user->removeGroup($role);
                     $changed = true;
                 }
             } else {
-                if (Binput::get('group_'.$group->id) === 'on') {
-                    $user->addGroup($group);
+                if (Binput::get('group_'.$role->id) === 'on') {
+                    $user->addGroup($role);
                     $changed = true;
                 }
             }

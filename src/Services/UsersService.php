@@ -29,4 +29,25 @@ class UsersService
 
         return $result;
     }
+
+    /**
+     * Remove user roles
+     *
+     * @param User $user
+     */
+    public function deleteUserInterests(User $user)
+    {
+        $user->roles()->detach();
+    }
+
+    /**
+     * Add user roles.
+     *
+     * @param User $user
+     * @param array $data
+     */
+    public function saveUserInterests(User $user, $data)
+    {
+        $user->roles()->sync($data);
+    }
 }

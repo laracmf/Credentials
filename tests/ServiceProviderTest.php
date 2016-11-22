@@ -12,7 +12,6 @@
 namespace GrahamCampbell\Tests\Credentials;
 
 use GrahamCampbell\Credentials\Credentials;
-use GrahamCampbell\Credentials\Repositories\GroupRepository;
 use GrahamCampbell\Credentials\Repositories\RevisionRepository;
 use GrahamCampbell\Credentials\Repositories\UserRepository;
 use GrahamCampbell\TestBenchCore\ServiceProviderTrait;
@@ -34,11 +33,6 @@ class ServiceProviderTest extends AbstractTestCase
     public function testUserRepositoryIsInjectable()
     {
         $this->assertIsInjectable(UserRepository::class);
-    }
-
-    public function testGroupRepositoryIsInjectable()
-    {
-        $this->assertIsInjectable(GroupRepository::class);
     }
 
     public function testCredentialsIsInjectable()

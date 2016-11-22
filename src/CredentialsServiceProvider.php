@@ -16,7 +16,6 @@ use GrahamCampbell\Credentials\Http\Controllers\ActivationController;
 use GrahamCampbell\Credentials\Http\Controllers\LoginController;
 use GrahamCampbell\Credentials\Http\Controllers\RegistrationController;
 use GrahamCampbell\Credentials\Http\Controllers\ResetController;
-use GrahamCampbell\Credentials\Repositories\GroupRepository;
 use GrahamCampbell\Credentials\Repositories\RevisionRepository;
 use GrahamCampbell\Credentials\Repositories\UserRepository;
 use Illuminate\Contracts\View\Factory as View;
@@ -111,7 +110,6 @@ class CredentialsServiceProvider extends ServiceProvider
     {
         $this->registerRevisionRepository();
         $this->registerUserRepository();
-        $this->registerGroupRepository();
         $this->registerCredentials();
 
         $this->registerLoginController();
@@ -169,25 +167,6 @@ class CredentialsServiceProvider extends ServiceProvider
         });
 
         $this->app->alias('userrepository', UserRepository::class);
-    }
-
-    /**
-     * Register the group repository class.
-     *
-     * @return void
-     */
-    protected function registerGroupRepository()
-    {
-        $this->app->singleton('grouprepository', function ($app) {
-            $model = config('sentinel.roles.model');
-            $group = new $model();
-
-            $validator = $app['validator'];
-
-            return new GroupRepository($group, $validator);
-        });
-
-        $this->app->alias('grouprepository', GroupRepository::class);
     }
 
     /**

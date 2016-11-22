@@ -200,4 +200,12 @@ class User extends EloquentUser implements HasPresenter
 
         return Credentials::getUserRepository()->getHasher()->hash($string);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function roles()
+    {
+        return $this->belongsToMany('GrahamCampbell\Credentials\Models\Role', 'role_users', 'user_id', 'role_id');
+    }
 }
