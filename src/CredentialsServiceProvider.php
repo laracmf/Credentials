@@ -11,7 +11,7 @@
 
 namespace GrahamCampbell\Credentials;
 
-use App\Services\UsersService;
+use GrahamCampbell\Credentials\Services\UsersService;
 use GrahamCampbell\Credentials\Http\Controllers\ActivationController;
 use GrahamCampbell\Credentials\Http\Controllers\LoginController;
 use GrahamCampbell\Credentials\Http\Controllers\RegistrationController;
