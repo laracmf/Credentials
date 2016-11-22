@@ -52,6 +52,7 @@ class RegistrationController extends AbstractController
         $input = Binput::only(['first_name', 'last_name', 'email', 'password', 'password_confirmation']);
 
         $val = UserRepository::validate($input, array_keys($input));
+
         if ($val->fails()) {
             return Redirect::route('account.register')->withInput()->withErrors($val->errors());
         }
@@ -85,15 +86,10 @@ class RegistrationController extends AbstractController
                     ->with('success', 'Your account has been created successfully. You may now login.');
             }
 
-            $activationResponse = Credentials::getActivationRepository()->create($user);
-            $code = $activationResponse ? $activationResponse->code : '';
-
-            $user->save();
-
             $mail = [
                 'url'     => URL::to(Config::get('credentials.home', '/')),
                 'link'    => URL::route('account.activate', ['id' => $user->id, 'code' => $code]),
-                'email'   => $user->getLogin(),
+                'email'   => $user->email,
                 'subject' => Config::get('app.name').' - Welcome',
             ];
 
