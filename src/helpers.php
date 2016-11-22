@@ -21,3 +21,12 @@ if (!function_exists('html_ago')) {
         return '<abbr class="timeago" title="'.$carbon->toISO8601String().'">'.$carbon->toDateTimeString().'</abbr>';
     }
 }
+
+function isAdmin()
+{
+    if (\GrahamCampbell\Credentials\Facades\Credentials::getUser()) {
+        return \GrahamCampbell\Credentials\Facades\Credentials::inRole('admin');
+    }
+
+    return false;
+}
