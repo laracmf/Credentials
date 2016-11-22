@@ -42,7 +42,6 @@
                         @if(isAdmin())
                             &nbsp;<a class="btn btn-info" href="{!! URL::route('users.edit', array('users' => $user->id)) !!}"><i class="fa fa-pencil-square-o"></i> Edit</a>
                         @endif
-                        &nbsp;<a class="btn btn-warning" href="#suspend_user_{!! $user->id !!}" data-toggle="modal" data-target="#suspend_user_{!! $user->id !!}"><i class="fa fa-ban"></i> Suspend</a>
                         @if(isAdmin())
                             &nbsp;<a class="btn btn-default" href="#reset_user_{!! $user->id !!}" data-toggle="modal" data-target="#reset_user_{!! $user->id !!}"><i class="fa fa-lock"></i> Reset Password</a>
                             &nbsp;<a class="btn btn-danger" href="#delete_user_{!! $user->id !!}" data-toggle="modal" data-target="#delete_user_{!! $user->id !!}"><i class="fa fa-times"></i> Delete</a>
@@ -57,7 +56,6 @@
 @stop
 
 @section('bottom')
-    @include('credentials::users.suspends')
     @if(isAdmin())
         @include('credentials::users.resets')
         @include('credentials::users.deletes')
