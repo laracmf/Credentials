@@ -49,13 +49,13 @@ class UserController extends AbstractController
         $this->usersService = $usersService;
 
         $this->setPermissions([
-            'index'   => 'mod|admin',
+            'index'   => 'moderator|admin',
             'create'  => 'admin',
             'store'   => 'admin',
-            'show'    => 'mod|admin',
+            'show'    => 'moderator|admin',
             'edit'    => 'admin',
             'update'  => 'admin',
-            'suspend' => 'mod|admin',
+            'suspend' => 'moderator|admin',
             'reset'   => 'admin',
             'resend'  => 'admin',
             'destroy' => 'admin',
