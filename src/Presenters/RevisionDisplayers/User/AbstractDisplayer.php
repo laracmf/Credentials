@@ -100,7 +100,7 @@ abstract class AbstractDisplayer extends AbstractRevisionDisplayer implements Re
             return ' this user\'s ';
         }
 
-        $user = $this->wrappedObject->revisionable()->withTrashed()->first(['first_name', 'last_name']);
+        $user = $this->wrappedObject()->revisionable()->getResults();
 
         return ' '.$user->first_name.' '.$user->last_name.'\'s ';
     }

@@ -25,7 +25,7 @@ trait AuthorPresenterTrait
      */
     public function author()
     {
-        $user = $this->getWrappedObject()->user()->withTrashed()->first(['first_name', 'last_name']);
+        $user = $this->getWrappedObject()->user()->getResults();
 
         if ($user) {
             return $user->first_name.' '.$user->last_name;
