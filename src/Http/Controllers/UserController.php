@@ -309,10 +309,8 @@ class UserController extends AbstractController
      */
     public function reset($id)
     {
-        $password = Str::random();
-
         $input = [
-            'password' => $password,
+            'password' => Str::random(),
         ];
 
         $rules = [
@@ -320,18 +318,19 @@ class UserController extends AbstractController
         ];
 
         $val = UserRepository::validate($input, $rules, true);
+
         if ($val->fails()) {
             return Redirect::route('users.show', ['users' => $id])->withErrors($val->errors());
         }
 
-        $user = UserRepository::find($id);
+        $user = User::find($id);
         $this->checkUser($user);
 
         $user->update($input);
 
         $mail = [
-            'password' => $password,
-            'email'    => $user->getLogin(),
+            'password' => $input['password'],
+            'email'    => $user->email,
             'subject'  => Config::get('app.name').' - New Password Information',
         ];
 
