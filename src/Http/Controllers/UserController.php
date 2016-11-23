@@ -75,9 +75,11 @@ class UserController extends AbstractController
         $users = Credentials::getUserRepository()->paginate();
         $links = UserRepository::links();
 
-        $users = $users->filter(function ($user) {
-            return !$user->inRole('admin');
-        });
+        if (is_array($users)) {
+            $users = $users->filter(function ($user) {
+                return !$user->inRole('admin') && !$user->deleted_at;
+            });
+        }
 
         return View::make('credentials::users.index', compact('users', 'links'));
     }
@@ -354,17 +356,17 @@ class UserController extends AbstractController
         $user = UserRepository::find($id);
         $this->checkUser($user);
 
-        if ($user->activated) {
+        if ($activation = Credentials::getActivationRepository()->completed($user)) {
             return Redirect::route('account.resend')->withInput()
                 ->with('error', 'That user is already activated.');
         }
 
-        $code = $user->getActivationCode();
+        $code = $activation->code;
 
         $mail = [
             'url'     => URL::to(Config::get('credentials.home', '/')),
             'link'    => URL::route('account.activate', ['id' => $user->id, 'code' => $code]),
-            'email'   => $user->getLogin(),
+            'email'   => $user->email,
             'subject' => Config::get('app.name').' - Activation',
         ];
 
@@ -385,12 +387,12 @@ class UserController extends AbstractController
      */
     public function destroy($id)
     {
-        $user = UserRepository::find($id);
+        $user = User::find($id);
         $this->checkUser($user);
 
-        $email = $user->getLogin();
-
         try {
+            $this->usersService->deleteUserRoles($user);
+
             $user->delete();
         } catch (\Exception $e) {
             return Redirect::route('users.show', ['users' => $id])
@@ -399,7 +401,7 @@ class UserController extends AbstractController
 
         $mail = [
             'url'     => URL::to(Config::get('credentials.home', '/')),
-            'email'   => $email,
+            'email'   => $user->email,
             'subject' => Config::get('app.name').' - Account Deleted Notification',
         ];
 

@@ -79,7 +79,7 @@ class LoginController extends AbstractController
         if (!User::where('email', '=', $input['email'])->first()) {
             return Redirect::route('account.login')
                 ->withInput()
-                ->with('error', 'User with email ' . $input['email'] . ' doesn\'t exists');
+                ->with('error', 'User with email ' . $input['email'] . ' doesn\'t exists.');
         }
 
         try {
