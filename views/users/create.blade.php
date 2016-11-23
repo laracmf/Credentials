@@ -16,16 +16,17 @@
         <?php
         $form = ['url' => URL::route('users.store'),
                 'button' => 'Create New User',
+                'roles' => $roles,
                 'defaults' => [
                         'first_name' => '',
                         'last_name' => '',
                         'email' => '',
                 ], ];
-        foreach ($groups as $group) {
-            if ($group->name == 'Users') {
-                $form['defaults']['group_'.$group->id] = true;
+        foreach ($roles as $role) {
+            if ($role->name == 'User') {
+                $form['defaults']['role_'.$role->id] = true;
             } else {
-                $form['defaults']['group_'.$group->id] = false;
+                $form['defaults']['role_'.$role->id] = false;
             }
         }
         ?>

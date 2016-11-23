@@ -75,7 +75,7 @@ class UserController extends AbstractController
         $users = Credentials::getUserRepository()->paginate();
         $links = UserRepository::links();
 
-        if (is_array($users)) {
+        if ($users) {
             $users = $users->filter(function ($user) {
                 return !$user->inRole('admin') && !$user->deleted_at;
             });
@@ -91,7 +91,9 @@ class UserController extends AbstractController
      */
     public function create()
     {
-        return View::make('credentials::users.create', compact('groups'));
+        return View::make('credentials::users.create', [
+            'roles' => Role::all()
+        ]);
     }
 
     /**
@@ -103,33 +105,30 @@ class UserController extends AbstractController
     {
         $password = Str::random();
 
-        $input = array_merge(Binput::only(['first_name', 'last_name', 'email']), [
-            'password'     => $password,
-            'activated'    => true,
-            'activated_at' => new DateTime(),
-        ]);
-
+        $input = Binput::only(['first_name', 'last_name', 'email']);
         $rules = UserRepository::rules(array_keys($input));
-        $rules['password'] = 'required|min:6';
-
         $val = UserRepository::validate($input, $rules, true);
+
         if ($val->fails()) {
             return Redirect::route('users.create')->withInput()->withErrors($val->errors());
         }
 
         try {
-            $user = UserRepository::create($input);
+            $user = new User($input);
+            $user->password = $user->hash($password);
+            $user->save();
 
-            foreach ($groups as $group) {
-                if (Binput::get('group_'.$group->id) === 'on') {
-                    $user->addGroup($group);
-                }
+            $requestRolesKeys = $this->usersService->getRolesKeysFromRequest(Binput::all());
+            $rolesIds = $this->usersService->parseRoles($requestRolesKeys);
+
+            if ($rolesIds) {
+                $this->usersService->saveUserRoles($user, $rolesIds);
             }
 
             $mail = [
                 'url'      => URL::to(Config::get('credentials.home', '/')),
                 'password' => $password,
-                'email'    => $user->getLogin(),
+                'email'    => $user->email,
                 'subject'  => Config::get('app.name').' - New Account Information',
             ];
 
