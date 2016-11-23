@@ -75,6 +75,10 @@ class UserController extends AbstractController
         $users = Credentials::getUserRepository()->paginate();
         $links = UserRepository::links();
 
+        $users = $users->filter(function ($user) {
+            return !$user->inRole('admin');
+        });
+
         return View::make('credentials::users.index', compact('users', 'links'));
     }
 
@@ -259,7 +263,7 @@ class UserController extends AbstractController
             $mail = [
                 'url'     => URL::to(Config::get('credentials.home', '/')),
                 'email'   => $input['email'],
-                'subject' => Config::get('app.name').' - Group Membership Changes',
+                'subject' => Config::get('app.name').' - Roles Changes',
             ];
 
             Mail::queue('credentials::emails.groups', $mail, function ($message) use ($mail) {

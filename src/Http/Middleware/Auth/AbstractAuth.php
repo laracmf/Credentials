@@ -80,16 +80,10 @@ abstract class AbstractAuth
 
         $level = $this->level();
         $role = $this->credentials->findRoleBySlug($level);
+        $user = $this->credentials->getUser();
 
         if ($role) {
-            $permissions = array_filter(
-                $role->permissions,
-                function ($value) {
-                    return $value;
-                }
-            );
-
-            if (!$this->credentials->hasAccess(array_keys($permissions))) {
+            if (!$user->inRole($level)) {
                 $this->logger->warning(
                     'User tried to access a page without permission',
                     ['path' => $request->path(), 'permission' => $level]
