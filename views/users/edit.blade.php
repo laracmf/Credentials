@@ -25,7 +25,6 @@
         <div class="col-xs-6">
             <div class="pull-right">
                 &nbsp;<a class="btn btn-success" href="{!! URL::route('users.show', array('users' => $user->id)) !!}"><i class="fa fa-file-text"></i> Show User</a>
-                &nbsp;<a class="btn btn-warning" href="#suspend_user" data-toggle="modal" data-target="#suspend_user"><i class="fa fa-ban"></i> Suspend User</a>
                 @if(isAdmin())
                     <a class="btn btn-default" href="#reset_user" data-toggle="modal" data-target="#reset_user"><i class="fa fa-lock"></i> Reset Password</a>
                     <a class="btn btn-danger" href="#delete_user" data-toggle="modal" data-target="#delete_user"><i class="fa fa-times"></i> Delete</a>
@@ -39,13 +38,16 @@
         $form = ['url' => URL::route('users.update', ['users' => $user->id]),
                 '_method' => 'PATCH',
                 'button' => 'Save User',
+                'roles' => $roles,
+                'userRoles' =>  $userRoles,
                 'defaults' => [
                         'first_name' => $user->first_name,
                         'last_name' => $user->last_name,
                         'email' => $user->email,
                 ], ];
-        foreach ($groups as $group) {
-            $form['defaults']['group_'.$group->id] = ($user->inGroup($group));
+
+        foreach ($roles as $role) {
+            $form['defaults']['role_'.$role->id] = in_array($role->id, $userRoles);
         }
         ?>
         @include('credentials::users.form')

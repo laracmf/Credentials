@@ -29,11 +29,11 @@
         </div>
     </div>
 
-    @foreach ($groups as $group)
+    @foreach ($roles as $role)
         <div class="form-group">
-            <label class="col-md-2 col-sm-3 col-xs-10 control-label" for="email">{!! $group->name !!}</label>
+            <label class="col-md-2 col-sm-3 col-xs-10 control-label" for="email">{!! $role->name !!}</label>
             <div class="col-lg-3 col-md-4 col-sm-5 col-xs-10">
-                <input class="make-switch" data-on-text="<i class='fa fa-check fa-inverse'></i>" data-off-text="<i class='fa fa-times'>" name="group_{!! $group->id !!}" id="group_{!! $group->id !!}" type="checkbox"{!! (Request::old('group_'.$group->id, $form['defaults']['group_'.$group->id]) == true) ? ' checked' : '' !!}>
+                <input class="make-switch" data-on-text="<i class='fa fa-check fa-inverse'></i>" data-off-text="<i class='fa fa-times'>" name="role_{!! $role->id !!}" id="role_{!! $role->id !!}" type="checkbox" {!! (Request::old('role_'.$role->id, $form['defaults']['role_'.$role->id]) == true) ? ' checked' : '' !!}>
             </div>
         </div>
     @endforeach

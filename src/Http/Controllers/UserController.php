@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use GrahamCampbell\Credentials\Models\Role;
 
 /**
  * This is the user controller class.
@@ -168,8 +169,14 @@ class UserController extends AbstractController
 
         $roles = $this->usersService->getRoles($user);
 
-        if ($roles) {
-            $roles = implode(', ', $roles);
+        $result = [];
+
+        foreach ($roles as $key => $role) {
+            $result[] = $role->name;
+        }
+
+        if ($result) {
+            $roles = implode(', ', $result);
         } else {
             $roles = 'No Group Memberships';
         }
@@ -189,10 +196,10 @@ class UserController extends AbstractController
         $user = User::find($id);
         $this->checkUser($user);
 
-        $roles = $this->usersService->getRoles($user);
-        $roles = !$roles ?: implode(', ', $roles);
+        $roles = Role::all();
+        $userRoles = ($this->usersService->getRoles($user))->pluck('id')->toArray();
 
-        return View::make('credentials::users.edit', compact('user', 'roles'));
+        return View::make('credentials::users.edit', compact('user', 'roles', 'userRoles'));
     }
 
     /**
@@ -204,6 +211,9 @@ class UserController extends AbstractController
      */
     public function update($id)
     {
+        $requestRolesKeys = $this->usersService->getRolesKeysFromRequest(Binput::all());
+        $rolesIds = $this->usersService->parseRoles($requestRolesKeys);
+
         $input = Binput::only(['first_name', 'last_name', 'email']);
 
         $val = UserRepository::validate($input, array_keys($input));
@@ -212,7 +222,7 @@ class UserController extends AbstractController
                 ->withInput()->withErrors($val->errors());
         }
 
-        $user = UserRepository::find($id);
+        $user = User::find($id);
         $this->checkUser($user);
 
         $email = $user['email'];
@@ -221,20 +231,11 @@ class UserController extends AbstractController
 
         $roles = $this->usersService->getRoles($user);
 
-        $changed = false;
+        $changed = !!array_diff($rolesIds, $roles->pluck('id')->toArray());
+        $this->usersService->deleteUserRoles($user);
 
-        foreach ($roles as $role) {
-            if ($user->inGroup($role)) {
-                if (Binput::get('group_'.$role->id) !== 'on') {
-                    $user->removeGroup($role);
-                    $changed = true;
-                }
-            } else {
-                if (Binput::get('group_'.$role->id) === 'on') {
-                    $user->addGroup($role);
-                    $changed = true;
-                }
-            }
+        if ($rolesIds) {
+            $this->usersService->saveUserRoles($user, $rolesIds);
         }
 
         if ($email !== $input['email']) {
