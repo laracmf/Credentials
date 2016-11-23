@@ -11,10 +11,10 @@
 
 namespace GrahamCampbell\Credentials\Http\Controllers;
 
+use Cartalyst\Sentinel\Roles\EloquentRole;
 use GrahamCampbell\Credentials\Services\UsersService;
 use Carbon\Carbon;
 use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
-use DateTime;
 use GrahamCampbell\Binput\Facades\Binput;
 use GrahamCampbell\Credentials\Facades\Credentials;
 use GrahamCampbell\Credentials\Facades\UserRepository;
@@ -26,7 +26,6 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use GrahamCampbell\Credentials\Models\Role;
 
 /**
  * This is the user controller class.
@@ -92,7 +91,7 @@ class UserController extends AbstractController
     public function create()
     {
         return View::make('credentials::users.create', [
-            'roles' => Role::all()
+            'roles' => EloquentRole::all()
         ]);
     }
 
@@ -201,7 +200,7 @@ class UserController extends AbstractController
         $user = User::find($id);
         $this->checkUser($user);
 
-        $roles = Role::all();
+        $roles = EloquentRole::all();
         $userRoles = ($this->usersService->getRoles($user))->pluck('id')->toArray();
 
         return View::make('credentials::users.edit', compact('user', 'roles', 'userRoles'));

@@ -206,6 +206,6 @@ class User extends EloquentUser implements HasPresenter
      */
     public function roles()
     {
-        return $this->belongsToMany('GrahamCampbell\Credentials\Models\Role', 'role_users', 'user_id', 'role_id');
+        return $this->belongsToMany('Cartalyst\Sentinel\Roles\EloquentRole', 'role_users', 'user_id', 'role_id');
     }
 }
