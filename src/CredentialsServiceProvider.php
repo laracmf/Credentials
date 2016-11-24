@@ -51,16 +51,17 @@ class CredentialsServiceProvider extends ServiceProvider
     protected function setupPackage()
     {
         $configuration = realpath(__DIR__.'/../config/credentials.php');
-        $sentinel = realpath(__DIR__ . '/../config/cartalyst.sentinel.php');
+        $sentinel = realpath(__DIR__ . '/../config/sentinel.php');
         $migrations = realpath(__DIR__.'/../migrations');
 
         $this->publishes([
             $configuration => config_path('credentials.php'),
             $migrations    => base_path('database/migrations'),
-            $sentinel      => config_path('cartalyst.sentinel.php')
+            $sentinel      => config_path('sentinel.php')
         ]);
 
         $this->mergeConfigFrom($configuration, 'credentials');
+        $this->mergeConfigFrom($sentinel, 'sentinel');
 
         $this->loadViewsFrom(realpath(__DIR__.'/../views'), 'credentials');
     }
