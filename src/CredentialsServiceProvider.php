@@ -16,7 +16,6 @@ use GrahamCampbell\Credentials\Http\Controllers\ActivationController;
 use GrahamCampbell\Credentials\Http\Controllers\LoginController;
 use GrahamCampbell\Credentials\Http\Controllers\RegistrationController;
 use GrahamCampbell\Credentials\Http\Controllers\ResetController;
-use GrahamCampbell\Credentials\Repositories\RevisionRepository;
 use GrahamCampbell\Credentials\Repositories\UserRepository;
 use Illuminate\Contracts\View\Factory as View;
 use Illuminate\Routing\Router;
@@ -108,7 +107,6 @@ class CredentialsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerRevisionRepository();
         $this->registerUserRepository();
         $this->registerCredentials();
 
@@ -129,25 +127,6 @@ class CredentialsServiceProvider extends ServiceProvider
         $this->app->bind(UsersService::class, function () {
             return new UsersService();
         });
-    }
-
-    /**
-     * Register the revision repository class.
-     *
-     * @return void
-     */
-    protected function registerRevisionRepository()
-    {
-        $this->app->singleton('revisionrepository', function ($app) {
-            $model = $app['config']['credentials.revision'];
-            $revision = new $model();
-
-            $validator = $app['validator'];
-
-            return new RevisionRepository($revision, $validator);
-        });
-
-        $this->app->alias('revisionrepository', RevisionRepository::class);
     }
 
     /**

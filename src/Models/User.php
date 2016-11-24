@@ -14,8 +14,6 @@ namespace GrahamCampbell\Credentials\Models;
 use Carbon\Carbon;
 use Cartalyst\Sentinel\Users\EloquentUser;
 use GrahamCampbell\Credentials\Facades\Credentials;
-use GrahamCampbell\Credentials\Facades\RevisionRepository;
-use GrahamCampbell\Credentials\Models\Relations\RevisionableTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
 use McCool\LaravelAutoPresenter\HasPresenter;
@@ -29,7 +27,7 @@ use Psy\Exception\RuntimeException;
  */
 class User extends EloquentUser implements HasPresenter
 {
-    use BaseModelTrait, RevisionableTrait, SoftDeletes;
+    use BaseModelTrait, SoftDeletes;
 
     /**
      * The model name.
@@ -37,13 +35,6 @@ class User extends EloquentUser implements HasPresenter
      * @var string
      */
     public static $name = 'user';
-
-    /**
-     * The revisionable columns.
-     *
-     * @var array
-     */
-    protected $keepRevisionOf = ['email', 'password', 'activated', 'last_login', 'first_name', 'last_name'];
 
     /**
      * The columns to select when displaying an index.

@@ -9,12 +9,7 @@
             "email": "graham@alt-three.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/Kit-kat1/sentinel"
-        }
-    ],
+    "repositories": [],
     "require": {
         "php": ">=5.5.9",
         "illuminate/console": "5.2.*|5.3.*",
@@ -28,7 +23,7 @@
         "illuminate/support": "5.2.*|5.3.*",
         "illuminate/validation": "5.2.*|5.3.*",
         "illuminate/view": "5.2.*|5.3.*",
-        "cartalyst/sentinel": "dev-master",
+        "cartalyst/sentinel": "~2.0",
         "graham-campbell/binput": "~3.0",
         "graham-campbell/throttle": "~5.2",
         "mccool/laravel-auto-presenter": "~3.0",
