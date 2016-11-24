@@ -115,3 +115,7 @@ There is currently no usage documentation for Laravel Credentials, but we are op
 ## License
 
 Laravel Credentials is licensed under [The MIT License (MIT)](LICENSE).
+
+# TEST
+
+For run tests successfully, please, copy sentinel config from vendor into Credentials config directory.
