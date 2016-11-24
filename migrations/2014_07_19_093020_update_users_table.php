@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Laravel Credentials.
+ * This file is part of Bootstrap CMS.
  *
  * (c) Graham Campbell <graham@alt-three.com>
  *
@@ -39,8 +39,10 @@ class UpdateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
+        if (Schema::hasTable('users')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->dropSoftDeletes();
+            });
+        }
     }
 }
