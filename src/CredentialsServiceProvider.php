@@ -61,7 +61,6 @@ class CredentialsServiceProvider extends ServiceProvider
         ]);
 
         $this->mergeConfigFrom($configuration, 'credentials');
-        $this->mergeConfigFrom($sentinel, 'sentinel');
 
         $this->loadViewsFrom(realpath(__DIR__.'/../views'), 'credentials');
     }
