@@ -30,23 +30,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class ActivationController extends AbstractController
 {
     /**
-     * The throttler instance.
-     *
-     * @var \GrahamCampbell\Throttle\Throttlers\ThrottlerInterface
-     */
-    protected $throttler;
-
-    /**
-     * Create a new instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Activate an existing user.
      *
      * @param int    $id

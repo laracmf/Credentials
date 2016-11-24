@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Bootstrap CMS.
+ * This file is part of Laravel Credentials.
  *
  * (c) Graham Campbell <graham@alt-three.com>
  *

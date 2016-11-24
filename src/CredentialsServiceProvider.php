@@ -172,10 +172,8 @@ class CredentialsServiceProvider extends ServiceProvider
      */
     protected function registerLoginController()
     {
-        $this->app->bind(LoginController::class, function ($app) {
-            $throttler = $app['throttle']->get($app['request'], 10, 10);
-
-            return new LoginController($throttler);
+        $this->app->bind(LoginController::class, function () {
+            return new LoginController();
         });
     }
 
@@ -186,10 +184,8 @@ class CredentialsServiceProvider extends ServiceProvider
      */
     protected function registerRegistrationController()
     {
-        $this->app->bind(RegistrationController::class, function ($app) {
-            $throttler = $app['throttle']->get($app['request'], 5, 30);
-
-            return new RegistrationController($throttler);
+        $this->app->bind(RegistrationController::class, function () {
+            return new RegistrationController();
         });
     }
 
@@ -200,10 +196,8 @@ class CredentialsServiceProvider extends ServiceProvider
      */
     protected function registerResetController()
     {
-        $this->app->bind(ResetController::class, function ($app) {
-            $throttler = $app['throttle']->get($app['request'], 5, 30);
-
-            return new ResetController($throttler);
+        $this->app->bind(ResetController::class, function () {
+            return new ResetController();
         });
     }
 
@@ -214,10 +208,8 @@ class CredentialsServiceProvider extends ServiceProvider
      */
     protected function registerActivationController()
     {
-        $this->app->bind(ActivationController::class, function ($app) {
-            $throttler = $app['throttle']->get($app['request'], 5, 30);
-
-            return new ActivationController($throttler);
+        $this->app->bind(ActivationController::class, function () {
+            return new ActivationController();
         });
     }
 

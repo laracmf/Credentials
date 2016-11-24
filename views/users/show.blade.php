@@ -82,7 +82,6 @@
         </div>
     </div>
     <hr>
-    @include('credentials::users.history')
 @stop
 
 @section('bottom')

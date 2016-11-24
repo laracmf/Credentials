@@ -53,8 +53,6 @@ class ResetController extends AbstractController
             return Redirect::route('account.reset')->withInput()->withErrors($val->errors());
         }
 
-        $this->throttler->hit();
-
         try {
             $user = Credentials::getUserRepository()->findByName($input['email']);
 

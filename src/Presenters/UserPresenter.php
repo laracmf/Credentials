@@ -54,22 +54,6 @@ class UserPresenter extends BasePresenter
     }
 
     /**
-     * Get the user's security history.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function securityHistory()
-    {
-        $history = $this->wrappedObject->security()->get();
-
-        $history->each(function ($item) {
-            $item->security = true;
-        });
-
-        return $this->presenter->decorate($history);
-    }
-
-    /**
      * Get the user's action history.
      *
      * @return \Illuminate\Database\Eloquent\Collection

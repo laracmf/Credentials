@@ -29,7 +29,7 @@ class Credentials
     protected $cache;
 
     /**
-     * The sentry instance.
+     * The sentinel instance.
      *
      * @var Sentinel
      */

@@ -17,7 +17,6 @@ use GrahamCampbell\Credentials\Facades\Credentials;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
 use McCool\LaravelAutoPresenter\HasPresenter;
-use Cartalyst\Sentinel\Users\IlluminateUserRepository;
 use Psy\Exception\RuntimeException;
 
 /**
@@ -114,16 +113,6 @@ class User extends EloquentUser implements HasPresenter
                     ->where('user_id', '=', $this->id);
             })
             ->orderBy('id', 'desc')->take(20);
-    }
-
-    /**
-     * Get the user's security history.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
-     */
-    public function security()
-    {
-        return $this->revisionHistory()->orderBy('id', 'desc')->take(20);
     }
 
     /**

@@ -182,7 +182,7 @@ class UserController extends AbstractController
         if ($result) {
             $roles = implode(', ', $result);
         } else {
-            $roles = 'No Group Memberships';
+            $roles = 'No Roles Found';
         }
 
         return View::make('credentials::users.show', compact('user', 'roles', 'activated'));
@@ -273,31 +273,6 @@ class UserController extends AbstractController
 
         return Redirect::route('users.show', ['users' => $user->id])
             ->with('success', 'The user has been updated successfully.');
-    }
-
-    /**
-     * Suspend an existing user.
-     *
-     * @param int $id
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function suspend($id)
-    {
-        try {
-            $throttle = Credentials::getThrottleProvider()->findByUserId($id);
-            $throttle->suspend();
-        } catch (ThrottlingException $e) {
-            return Redirect::route('users.suspend', ['users' => $id])->withInput()
-                ->with('error', $e->getMessage());
-        } catch (\Exception $e) {
-            throw new NotFoundHttpException('User Not Found', $e);
-        }
-
-        return Redirect::route('users.show', ['users' => $id])
-            ->with('success', 'The user has been suspended successfully.');
     }
 
     /**
