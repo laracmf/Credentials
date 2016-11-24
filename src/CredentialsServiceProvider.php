@@ -61,6 +61,7 @@ class CredentialsServiceProvider extends ServiceProvider
         ]);
 
         $this->mergeConfigFrom($configuration, 'credentials');
+        $this->mergeConfigFrom($sentinel, 'sentinel');
 
         $this->loadViewsFrom(realpath(__DIR__.'/../views'), 'credentials');
     }
@@ -94,7 +95,7 @@ class CredentialsServiceProvider extends ServiceProvider
      */
     public function setupRoutes(Router $router)
     {
-        $router->group(['namespace' => 'GrahamCampbell\Credentials\Http\Controllers'], function () {
+        $router->group(['namespace' => 'GrahamCampbell\Credentials\Http\Controllers'], function (Router $router) {
             require __DIR__.'/Http/routes.php';
         });
     }
