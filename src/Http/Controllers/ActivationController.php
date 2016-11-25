@@ -103,7 +103,7 @@ class ActivationController extends AbstractController
             $mail = [
                 'url'     => URL::to(Config::get('credentials.home', '/')),
                 'link'    => URL::route('account.activate', ['id' => $user->id, 'code' => $activation->code]),
-                'email'   => $user->getLogin(),
+                'email'   => $user->email,
                 'subject' => Config::get('app.name').' - Activation',
             ];
 

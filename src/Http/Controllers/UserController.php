@@ -301,10 +301,13 @@ class UserController extends AbstractController
         $user = User::find($id);
         $this->checkUser($user);
 
+        $password = $input['password'];
+        $input['password'] = $user->hash($password);
+
         $user->update($input);
 
         $mail = [
-            'password' => $input['password'],
+            'password' => $password,
             'email'    => $user->email,
             'subject'  => Config::get('app.name').' - New Password Information',
         ];

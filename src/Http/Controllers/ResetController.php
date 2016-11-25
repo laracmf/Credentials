@@ -60,7 +60,7 @@ class ResetController extends AbstractController
 
             $mail = [
                 'link'    => URL::route('account.password', ['id'    => $user->id, 'code'    => $code]),
-                'email'   => $user->getLogin(),
+                'email'   => $user->email,
                 'subject' => Config::get('app.name').' - Password Reset Confirmation',
             ];
 
@@ -97,14 +97,14 @@ class ResetController extends AbstractController
 
             $password = Str::random();
 
-            if (!$user->attemptResetPassword($code, $password)) {
+            if ($user && !$user->attemptResetPassword($code, $user->hash($password))) {
                 return Redirect::to(Config::get('credentials.home', '/'))
                     ->with('error', 'There was a problem resetting your password. Please contact support.');
             }
 
             $mail = [
                 'password' => $password,
-                'email'    => $user->getLogin(),
+                'email'    => $user->email,
                 'subject'  => Config::get('app.name').' - New Password Information',
             ];
 

@@ -76,7 +76,7 @@ class AccountController extends AbstractController
         $user = Credentials::getUser();
         $this->checkUser($user);
 
-        $email = $user->getLogin();
+        $email = $user->email;
 
         Credentials::logout();
 
@@ -164,7 +164,7 @@ class AccountController extends AbstractController
 
         $mail = [
             'url'     => URL::to(Config::get('credentials.home', '/')),
-            'email'   => $user->getLogin(),
+            'email'   => $user->email,
             'subject' => Config::get('app.name').' - New Password Notification',
         ];
 

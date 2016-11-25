@@ -68,7 +68,7 @@ class RegistrationController extends AbstractController
             if (!Config::get('credentials.activation')) {
                 $mail = [
                     'url'     => URL::to(Config::get('credentials.home', '/')),
-                    'email'   => $user->getLogin(),
+                    'email'   => $user->email,
                     'subject' => Config::get('app.name').' - Welcome',
                 ];
 
