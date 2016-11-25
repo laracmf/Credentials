@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use GrahamCampbell\BootstrapCMS\Http\Requests\ResetPasswordRequest;
 
 /**
  * This is the account controller class.
@@ -147,15 +146,17 @@ class AccountController extends AbstractController
     /**
      * Update the user's password.
      *
-     * @param ResetPasswordRequest $request
-     *
      * @return \Illuminate\Http\Response
      */
-    public function patchPassword(ResetPasswordRequest $request)
+    public function patchPassword()
     {
-        $input = $request->only(['password', 'password_confirmation']);
+        $input = Binput::only(['password', 'password_confirmation']);
 
-        $val = UserRepository::validate($input, array_keys($input));
+        $rules = [
+            'password' => 'required|max:255|min:6|confirmed',
+        ];
+
+        $val = UserRepository::validate($input, $rules, true);
 
         if ($val->fails()) {
             return Redirect::route('account.profile')->withInput()->withErrors($val->errors());
@@ -176,7 +177,7 @@ class AccountController extends AbstractController
             $message->to($mail['email'])->subject($mail['subject']);
         });
 
-        $input['password'] = $user->hash($input['password']);
+        $input['password'] = Credentials::getUserRepository()->getHasher()->hash($input['password']);
 
         $user->update($input);
 
