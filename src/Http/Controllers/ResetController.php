@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use GrahamCampbell\Credentials\Models\User;
 
 /**
  * This is the reset controller class.
@@ -49,22 +50,31 @@ class ResetController extends AbstractController
         $input = Binput::only('email');
 
         $val = UserRepository::validate($input, array_keys($input));
+        $email = $input['email'];
+
         if ($val->fails()) {
             return Redirect::route('account.reset')->withInput()->withErrors($val->errors());
         }
 
-        try {
-            $user = Credentials::getUserRepository()->findByName($input['email']);
+        $input = [
+            'password' => Str::random(),
+        ];
 
-            $code = $user->getResetPasswordCode();
+        try {
+            $user = User::where('email', '=', $email)->first();
+            $password = $input['password'];
+
+            $input['password'] = $user->hash($password);
+
+            $user->update($input);
 
             $mail = [
-                'link'    => URL::route('account.password', ['id'    => $user->id, 'code'    => $code]),
-                'email'   => $user->email,
-                'subject' => Config::get('app.name').' - Password Reset Confirmation',
+                'password' => $password,
+                'email'    => $user->email,
+                'subject'  => Config::get('app.name').' - New Password Information',
             ];
 
-            Mail::queue('credentials::emails.reset', $mail, function ($message) use ($mail) {
+            Mail::queue('credentials::emails.password', $mail, function ($message) use ($mail) {
                 $message->to($mail['email'])->subject($mail['subject']);
             });
 
