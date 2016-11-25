@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use GrahamCampbell\Credentials\Models\User;
 
 /**
  * This is the resend controller class.
@@ -93,7 +94,7 @@ class ActivationController extends AbstractController
         }
 
         try {
-            $user = Credentials::getUserRepository()->findByName($input['email']);
+            $user = User::where('email', '=', $input['email'])->first();
 
             if ($activation = Credentials::getActivationRepository()->completed($user)) {
                 return Redirect::route('account.resend')->withInput()
