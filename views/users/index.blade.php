@@ -35,7 +35,7 @@
             <tbody>
             @foreach ($users as $user)
                 <tr>
-                    <td>{!! $user->name !!}</td>
+                    <td>{!! $user->first_name !!} {!! $user->first_name !!}</td>
                     <td>{!! $user->email !!}</td>
                     <td>
                         &nbsp;<a class="btn btn-success" href="{!! URL::route('users.show', array('users' => $user->id)) !!}"><i class="fa fa-file-text"></i> Show</a>
