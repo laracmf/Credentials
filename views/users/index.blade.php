@@ -34,7 +34,7 @@
             </thead>
             <tbody>
             @foreach ($users as $user)
-                <tr>
+                <tr class="centered">
                     <td>{!! $user->first_name !!} {!! $user->first_name !!}</td>
                     <td>{!! $user->email !!}</td>
                     <td>
