@@ -1,4 +1,4 @@
-@extends(Config::get('credentials.layout'))
+@extends(Config::get('credentials.admin-layout'))
 
 @section('title')
     <?php $__navtype = 'admin'; ?>
