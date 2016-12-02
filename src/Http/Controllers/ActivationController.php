@@ -88,7 +88,12 @@ class ActivationController extends AbstractController
     {
         $input = Binput::only('email');
 
-        $val = UserRepository::validate($input, array_keys($input));
+        $rules = [
+            'email' => 'email',
+        ];
+
+        $val = UserRepository::validate($input, $rules, true);
+
         if ($val->fails()) {
             return Redirect::route('account.resend')->withInput()->withErrors($val->errors());
         }
@@ -96,10 +101,20 @@ class ActivationController extends AbstractController
         try {
             $user = User::where('email', '=', $input['email'])->first();
 
-            if ($activation = Credentials::getActivationRepository()->completed($user)) {
+            if (!$user) {
+                return Redirect::route('account.resend')
+                    ->with('error', 'That user does not exist.');
+            }
+
+            $activationCompleted = Credentials::getActivationRepository()->completed($user);
+
+            if ($activationCompleted) {
                 return Redirect::route('account.resend')->withInput()
                     ->with('error', 'That user is already activated.');
             }
+
+            $activation = Credentials::getActivationRepository()->exists($user) ?:
+                Credentials::getActivationRepository()->create($user);
 
             $mail = [
                 'url'     => URL::to(Config::get('credentials.home', '/')),
@@ -116,7 +131,7 @@ class ActivationController extends AbstractController
                 ->with('success', 'Check your email for your new activation email.');
         } catch (\Exception $e) {
             return Redirect::route('account.resend')
-                ->with('error', 'That user does not exist.');
+                ->with('error', $e->getMessage());
         }
     }
 }

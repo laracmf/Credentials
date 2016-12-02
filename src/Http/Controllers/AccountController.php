@@ -51,16 +51,6 @@ class AccountController extends AbstractController
      *
      * @return \Illuminate\View\View
      */
-    public function getHistory()
-    {
-        return View::make('credentials::account.history')->withUser(Credentials::getUser());
-    }
-
-    /**
-     * Display the user's profile.
-     *
-     * @return \Illuminate\View\View
-     */
     public function getProfile()
     {
         return View::make('credentials::account.profile')->withUser(Credentials::getUser());

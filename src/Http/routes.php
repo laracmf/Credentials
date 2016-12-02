@@ -22,7 +22,6 @@ Route::get('account', ['as' => 'account', function () {
 }]);
 
 // account routes
-Route::get('account/history', ['as' => 'account.history', 'uses' => 'AccountController@getHistory']);
 Route::get('account/profile', ['as' => 'account.profile', 'uses' => 'AccountController@getProfile']);
 Route::delete('account/profile', ['as' => 'account.profile.delete', 'uses' => 'AccountController@deleteProfile']);
 Route::patch('account/details', ['as' => 'account.details.patch', 'uses' => 'AccountController@patchDetails']);
