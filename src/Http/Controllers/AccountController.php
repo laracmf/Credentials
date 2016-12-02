@@ -110,13 +110,20 @@ class AccountController extends AbstractController
     {
         $input = Binput::only(['first_name', 'last_name', 'email']);
 
-        $val = UserRepository::validate($input, array_keys($input));
+        $user = Credentials::getUser();
+        $this->checkUser($user);
+
+        $rules = [
+            'first_name' => 'max:255|min:6',
+            'last_name'  => 'max:255|min:6',
+            'email'      => 'required|email|unique:users,email,' . $user->id,
+        ];
+
+        $val = UserRepository::validate($input, $rules, true);
+
         if ($val->fails()) {
             return Redirect::route('account.profile')->withInput()->withErrors($val->errors());
         }
-
-        $user = Credentials::getUser();
-        $this->checkUser($user);
 
         $email = $user['email'];
 
