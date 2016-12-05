@@ -32,8 +32,6 @@ class LoginController extends AbstractController
 {
     /**
      * Create a new instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -64,11 +62,12 @@ class LoginController extends AbstractController
     public function postLogin()
     {
         $remember = Binput::get('rememberMe');
-
         $input = Binput::only(['email', 'password']);
 
-        $rules = UserRepository::rules(array_keys($input));
-        $rules['password'] = 'required|min:6';
+        $rules = [
+            'password' => 'required|min:6',
+            'email'    => 'required|email',
+        ];
 
         $val = UserRepository::validate($input, $rules, true);
 
@@ -76,7 +75,7 @@ class LoginController extends AbstractController
             return Redirect::route('account.login')->withInput()->withErrors($val->errors());
         }
 
-        if (!User::where('email', '=', $input['email'])->first()) {
+        if (!$user = User::where('email', '=', $input['email'])->first()) {
             return Redirect::route('account.login')
                 ->withInput()
                 ->with('error', 'User with email ' . $input['email'] . ' doesn\'t exists.');
@@ -93,7 +92,6 @@ class LoginController extends AbstractController
                 return Redirect::route('account.login')->withInput()->withErrors($val->errors())
                     ->with('error', 'You have not yet activated this account.');
             } else {
-                $user = User::where('email', '=', $input['email'])->first();
                 Credentials::getActivationRepository()->create($user);
 
                 //Set role for user

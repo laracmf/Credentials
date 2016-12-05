@@ -106,9 +106,7 @@ class ActivationController extends AbstractController
                     ->with('error', 'That user does not exist.');
             }
 
-            $activationCompleted = Credentials::getActivationRepository()->completed($user);
-
-            if ($activationCompleted) {
+            if (Credentials::getActivationRepository()->completed($user)) {
                 return Redirect::route('account.resend')->withInput()
                     ->with('error', 'That user is already activated.');
             }

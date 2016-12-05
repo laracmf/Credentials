@@ -332,16 +332,17 @@ class UserController extends AbstractController
         $user = UserRepository::find($id);
         $this->checkUser($user);
 
-        if ($activation = Credentials::getActivationRepository()->completed($user)) {
+        if (Credentials::getActivationRepository()->completed($user)) {
             return Redirect::route('account.resend')->withInput()
-                ->with('error', 'That user is already activated.');
+                ->with('error', 'User is already activated.');
         }
 
-        $code = $activation->code;
+        $activation = Credentials::getActivationRepository()->exists($user) ?:
+            Credentials::getActivationRepository()->create($user);
 
         $mail = [
             'url'     => URL::to(Config::get('credentials.home', '/')),
-            'link'    => URL::route('account.activate', ['id' => $user->id, 'code' => $code]),
+            'link'    => URL::route('account.activate', ['id' => $user->id, 'code' => $activation->code]),
             'email'   => $user->email,
             'subject' => Config::get('app.name').' - Activation',
         ];
