@@ -53,7 +53,7 @@ class RegistrationController extends AbstractController
 
         $rules = [
             'password'   => 'required|max:255|min:6|confirmed',
-            'email'      => 'required|email',
+            'email'      => 'required|email|unique',
             'first_name' => 'max:30|min:3',
             'last_name'  => 'max:30|min:3',
         ];
