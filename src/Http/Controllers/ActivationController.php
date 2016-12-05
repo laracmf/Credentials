@@ -89,7 +89,7 @@ class ActivationController extends AbstractController
         $input = Binput::only('email');
 
         $rules = [
-            'email' => 'email',
+            'email' => 'email|exists:users',
         ];
 
         $val = UserRepository::validate($input, $rules, true);
@@ -100,11 +100,6 @@ class ActivationController extends AbstractController
 
         try {
             $user = User::where('email', '=', $input['email'])->first();
-
-            if (!$user) {
-                return Redirect::route('account.resend')
-                    ->with('error', 'That user does not exist.');
-            }
 
             if (Credentials::getActivationRepository()->completed($user)) {
                 return Redirect::route('account.resend')->withInput()

@@ -54,8 +54,8 @@ class RegistrationController extends AbstractController
         $rules = [
             'password'   => 'required|max:255|min:6|confirmed',
             'email'      => 'required|email|unique:users,email',
-            'first_name' => 'sometimes|max:30|min:3|string',
-            'last_name'  => 'sometimes|max:30|min:3|string',
+            'first_name' => 'sometimes|max:30|min:2|string',
+            'last_name'  => 'sometimes|max:30|min:2|string',
         ];
 
         $val = UserRepository::validate($input, $rules, true);

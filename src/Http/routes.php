@@ -43,7 +43,6 @@ if (Config::get('credentials.activation')) {
 // reset routes
 Route::get('account/reset', ['as' => 'account.reset', 'uses' => 'ResetController@getReset']);
 Route::post('account/reset', ['as' => 'account.reset.post', 'uses' => 'ResetController@postReset']);
-Route::get('account/password/{id}/{code}', ['as' => 'account.password', 'uses' => 'ResetController@getPassword']);
 
 // login routes
 Route::get('account/login', ['as' => 'account.login', 'uses' => 'LoginController@getLogin']);

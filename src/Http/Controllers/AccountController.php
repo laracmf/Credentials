@@ -104,8 +104,8 @@ class AccountController extends AbstractController
         $this->checkUser($user);
 
         $rules = [
-            'first_name' => 'max:255|min:6',
-            'last_name'  => 'max:255|min:6',
+            'first_name' => 'max:255|min:2',
+            'last_name'  => 'max:255|min:2',
             'email'      => 'required|email|unique:users,email,' . $user->id,
         ];
 
@@ -115,13 +115,11 @@ class AccountController extends AbstractController
             return Redirect::route('account.profile')->withInput()->withErrors($val->errors());
         }
 
-        $email = $user['email'];
-
         $user->update($input);
 
-        if ($email !== $input['email']) {
+        if ($user->email !== $input['email']) {
             $mail = [
-                'old'     => $email,
+                'old'     => $user->email,
                 'new'     => $input['email'],
                 'url'     => URL::to(Config::get('credentials.home', '/')),
                 'subject' => Config::get('app.name').' - New Email Information',

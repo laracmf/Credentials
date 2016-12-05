@@ -66,7 +66,7 @@ class LoginController extends AbstractController
 
         $rules = [
             'password' => 'required|min:6',
-            'email'    => 'required|email',
+            'email'    => 'required|email|exists:users'
         ];
 
         $val = UserRepository::validate($input, $rules, true);
@@ -75,11 +75,7 @@ class LoginController extends AbstractController
             return Redirect::route('account.login')->withInput()->withErrors($val->errors());
         }
 
-        if (!$user = User::where('email', '=', $input['email'])->first()) {
-            return Redirect::route('account.login')
-                ->withInput()
-                ->with('error', 'User with email ' . $input['email'] . ' doesn\'t exists.');
-        }
+        $user = User::where('email', '=', $input['email'])->first();
 
         try {
             if (!Credentials::authenticate($input, $remember)) {
