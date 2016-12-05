@@ -14,7 +14,6 @@ namespace GrahamCampbell\Credentials\Http\Controllers;
 use Cartalyst\Sentinel\Roles\EloquentRole;
 use GrahamCampbell\Credentials\Services\UsersService;
 use Carbon\Carbon;
-use Cartalyst\Sentinel\Checkpoints\ThrottlingException;
 use GrahamCampbell\Binput\Facades\Binput;
 use GrahamCampbell\Credentials\Facades\Credentials;
 use GrahamCampbell\Credentials\Facades\UserRepository;
@@ -102,45 +101,47 @@ class UserController extends AbstractController
      */
     public function store()
     {
-        $password = Str::random();
-
         $input = Binput::only(['first_name', 'last_name', 'email']);
-        $rules = UserRepository::rules(array_keys($input));
+
+        $rules = [
+            'email'      => 'required|email|unique:users,email',
+            'first_name' => 'sometimes|max:30|min:2|string',
+            'last_name'  => 'sometimes|max:30|min:2|string'
+        ];
+
         $val = UserRepository::validate($input, $rules, true);
 
         if ($val->fails()) {
             return Redirect::route('users.create')->withInput()->withErrors($val->errors());
         }
 
-        try {
-            $user = new User($input);
-            $user->password = $user->hash($password);
-            $user->save();
+        $user = new User($input);
 
-            $requestRolesKeys = $this->usersService->getRolesKeysFromRequest(Binput::all());
-            $rolesIds = $this->usersService->parseRoles($requestRolesKeys);
+        $password = Str::random();
+        $user->password = $user->hash($password);
 
-            if ($rolesIds) {
-                $this->usersService->saveUserRoles($user, $rolesIds);
-            }
+        $user->save();
 
-            $mail = [
-                'url'      => URL::to(Config::get('credentials.home', '/')),
-                'password' => $password,
-                'email'    => $user->email,
-                'subject'  => Config::get('app.name').' - New Account Information',
-            ];
+        $requestRolesKeys = $this->usersService->getRolesKeysFromRequest(Binput::all());
+        $rolesIds = $this->usersService->parseRoles($requestRolesKeys);
 
-            Mail::queue('credentials::emails.newuser', $mail, function ($message) use ($mail) {
-                $message->to($mail['email'])->subject($mail['subject']);
-            });
-
-            return Redirect::route('users.show', ['users' => $user->id])
-                ->with('success', 'The user has been created successfully. Their password has been emailed to them.');
-        } catch (\Exception $e) {
-            return Redirect::route('users.create')->withInput()->withErrors($val->errors())
-                ->with('error', 'That email address is taken.');
+        if ($rolesIds) {
+            $this->usersService->saveUserRoles($user, $rolesIds);
         }
+
+        $mail = [
+            'url'      => URL::to(Config::get('credentials.home', '/')),
+            'password' => $password,
+            'email'    => $user->email,
+            'subject'  => Config::get('app.name').' - New Account Information',
+        ];
+
+        Mail::queue('credentials::emails.newuser', $mail, function ($message) use ($mail) {
+            $message->to($mail['email'])->subject($mail['subject']);
+        });
+
+        return Redirect::route('users.show', ['users' => $user->id])
+            ->with('success', 'The user has been created successfully. Their password has been emailed to them.');
     }
 
     /**
