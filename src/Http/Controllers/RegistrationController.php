@@ -51,7 +51,14 @@ class RegistrationController extends AbstractController
 
         $input = Binput::only(['first_name', 'last_name', 'email', 'password', 'password_confirmation']);
 
-        $val = UserRepository::validate($input, array_keys($input));
+        $rules = [
+            'password'   => 'required|max:255|min:6|confirmed',
+            'email'      => 'required|email',
+            'first_name' => 'max:30|min:3',
+            'last_name'  => 'max:30|min:3',
+        ];
+
+        $val = UserRepository::validate($input, $rules, true);
 
         if ($val->fails()) {
             return Redirect::route('account.register')->withInput()->withErrors($val->errors());
