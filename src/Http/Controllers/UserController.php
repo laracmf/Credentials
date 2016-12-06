@@ -159,29 +159,19 @@ class UserController extends AbstractController
         if ($activation = Credentials::getActivationRepository()->completed($user)) {
             $activated = html_ago(Carbon::createFromFormat('Y-m-d H:m:s', $activation->completed_at));
         } else {
-            if (Credentials::hasAccess(
-                    [
-                        'user.create',
-                        'user.delete',
-                        'user.view',
-                        'user.update'
-                    ]) && Config::get('credentials.activation')) {
-                $activated = 'No - <a href="#resend_user" data-toggle="modal" data-target="#resend_user">Resend Email</a>';
+            if (Credentials::inRole('admin') && Config::get('credentials.activation')) {
+                $activated =
+                    'No - <a href="#resend_user" data-toggle="modal" data-target="#resend_user">Resend Email</a>';
             } else {
                 $activated = 'Not Activated';
             }
         }
 
         $roles = $this->usersService->getRoles($user);
+        $roles = $roles->pluck('name')->toArray();
 
-        $result = [];
-
-        foreach ($roles as $key => $role) {
-            $result[] = $role->name;
-        }
-
-        if ($result) {
-            $roles = implode(', ', $result);
+        if ($roles) {
+            $roles = implode(', ', $roles);
         } else {
             $roles = 'No Roles Found';
         }
@@ -219,33 +209,51 @@ class UserController extends AbstractController
         $requestRolesKeys = $this->usersService->getRolesKeysFromRequest(Binput::all());
         $rolesIds = $this->usersService->parseRoles($requestRolesKeys);
 
+        $user = User::find($id);
+        $this->checkUser($user);
+
         $input = Binput::only(['first_name', 'last_name', 'email']);
 
-        $val = UserRepository::validate($input, array_keys($input));
+        $rules = [
+            'email'      => 'required|email|unique:users,email,' . $user->id,
+            'first_name' => 'sometimes|max:30|min:2|string',
+            'last_name'  => 'sometimes|max:30|min:2|string'
+        ];
+
+        $val = UserRepository::validate($input, $rules, true);
+
         if ($val->fails()) {
             return Redirect::route('users.edit', ['users' => $id])
                 ->withInput()->withErrors($val->errors());
         }
 
-        $user = User::find($id);
-        $this->checkUser($user);
-
-        $email = $user['email'];
-
         $user->update($input);
 
         $roles = $this->usersService->getRoles($user);
 
-        $changed = !!array_diff($rolesIds, $roles->pluck('id')->toArray());
-        $this->usersService->deleteUserRoles($user);
+        $changed = array_diff($rolesIds, $roles->pluck('id')->toArray());
 
-        if ($rolesIds) {
-            $this->usersService->saveUserRoles($user, $rolesIds);
+        if ($changed) {
+            $this->usersService->deleteUserRoles($user);
+
+            if ($rolesIds) {
+                $this->usersService->saveUserRoles($user, $rolesIds);
+            }
+
+            $mail = [
+                'url'     => URL::to(Config::get('credentials.home', '/')),
+                'email'   => $input['email'],
+                'subject' => Config::get('app.name').' - Roles Changes',
+            ];
+
+            Mail::queue('credentials::emails.groups', $mail, function ($message) use ($mail) {
+                $message->to($mail['email'])->subject($mail['subject']);
+            });
         }
 
-        if ($email !== $input['email']) {
+        if ($user->email !== $input['email']) {
             $mail = [
-                'old'     => $email,
+                'old'     => $user->email,
                 'new'     => $input['email'],
                 'url'     => URL::to(Config::get('credentials.home', '/')),
                 'subject' => Config::get('app.name').' - New Email Information',
@@ -257,18 +265,6 @@ class UserController extends AbstractController
 
             Mail::queue('credentials::emails.newemail', $mail, function ($message) use ($mail) {
                 $message->to($mail['new'])->subject($mail['subject']);
-            });
-        }
-
-        if ($changed) {
-            $mail = [
-                'url'     => URL::to(Config::get('credentials.home', '/')),
-                'email'   => $input['email'],
-                'subject' => Config::get('app.name').' - Roles Changes',
-            ];
-
-            Mail::queue('credentials::emails.groups', $mail, function ($message) use ($mail) {
-                $message->to($mail['email'])->subject($mail['subject']);
             });
         }
 
@@ -285,15 +281,13 @@ class UserController extends AbstractController
      */
     public function reset($id)
     {
-        $input = [
-            'password' => Str::random(),
-        ];
+        $password = Str::random();
 
         $rules = [
-            'password' => 'required|min:6',
+            'password' => 'required|max:255|min:6'
         ];
 
-        $val = UserRepository::validate($input, $rules, true);
+        $val = UserRepository::validate(['password' => $password], $rules, true);
 
         if ($val->fails()) {
             return Redirect::route('users.show', ['users' => $id])->withErrors($val->errors());
@@ -302,7 +296,6 @@ class UserController extends AbstractController
         $user = User::find($id);
         $this->checkUser($user);
 
-        $password = $input['password'];
         $input['password'] = $user->hash($password);
 
         $user->update($input);
@@ -330,7 +323,7 @@ class UserController extends AbstractController
      */
     public function resend($id)
     {
-        $user = UserRepository::find($id);
+        $user = User::find($id);
         $this->checkUser($user);
 
         if (Credentials::getActivationRepository()->completed($user)) {
