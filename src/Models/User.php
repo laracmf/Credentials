@@ -43,6 +43,13 @@ class User extends EloquentUser implements HasPresenter
     public static $index = ['id', 'email', 'first_name', 'last_name'];
 
     /**
+     * The columns to order by when displaying an index.
+     *
+     * @var string
+     */
+    public static $order = 'email';
+
+    /**
      * The user validation rules.
      *
      * @var array

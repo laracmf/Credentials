@@ -32,13 +32,6 @@ abstract class AbstractRepository
     public static $paginate = 20;
 
     /**
-     * The columns to order by when displaying an index.
-     *
-     * @var string
-     */
-    public static $order = 'email';
-
-    /**
      * The direction to order by when displaying an index.
      *
      * @var string
@@ -72,7 +65,6 @@ abstract class AbstractRepository
         $this->model = $model;
         $this->validator = $validator;
 
-        $this->setOrder();
         $this->setPagination();
         $this->setSort();
     }
@@ -111,13 +103,5 @@ abstract class AbstractRepository
     public function setSort()
     {
         $this::$sort = config('credentials.sort');
-    }
-
-    /**
-     * Set columns to order by when displaying an index.
-     */
-    public function setOrder()
-    {
-        $this::$order = config('credentials.order');
     }
 }
