@@ -11,6 +11,7 @@
 
 namespace GrahamCampbell\Credentials;
 
+use GrahamCampbell\BootstrapCMS\Models\User;
 use GrahamCampbell\Credentials\Services\UsersService;
 use GrahamCampbell\Credentials\Http\Controllers\ActivationController;
 use GrahamCampbell\Credentials\Http\Controllers\LoginController;
@@ -137,12 +138,9 @@ class CredentialsServiceProvider extends ServiceProvider
     protected function registerUserRepository()
     {
         $this->app->singleton('userrepository', function ($app) {
-            $model = config('sentinel.roles.model');
-            $user = new $model();
-
             $validator = $app['validator'];
 
-            return new UserRepository($user, $validator);
+            return new UserRepository(new User(), $validator);
         });
 
         $this->app->alias('userrepository', UserRepository::class);

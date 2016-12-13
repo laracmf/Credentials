@@ -188,4 +188,38 @@ class User extends EloquentUser implements HasPresenter
     {
         return $this->belongsToMany('Cartalyst\Sentinel\Roles\EloquentRole', 'role_users', 'user_id', 'role_id');
     }
+
+    /**
+     * Get max users per page when displaying a paginated index.
+     *
+     * @return int
+     */
+    public function getPagination()
+    {
+        return $this::$paginate;
+    }
+
+    /**
+     * Set max users per page when displaying a paginated index.
+     */
+    public function setPagination()
+    {
+        $this::$paginate = config('credentials.paginate');
+    }
+
+    /**
+     * Set direction to order by when displaying an index.
+     */
+    public function setSort()
+    {
+        $this::$paginate = config('credentials.sort');
+    }
+
+    /**
+     * Set columns to order by when displaying an index.
+     */
+    public function setOrder()
+    {
+        $this::$paginate = config('credentials.order');
+    }
 }
