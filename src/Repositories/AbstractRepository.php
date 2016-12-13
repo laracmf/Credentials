@@ -110,7 +110,7 @@ abstract class AbstractRepository
      */
     public function setSort()
     {
-        $this::$paginate = config('credentials.sort');
+        $this::$sort = config('credentials.sort');
     }
 
     /**
@@ -118,6 +118,6 @@ abstract class AbstractRepository
      */
     public function setOrder()
     {
-        $this::$paginate = config('credentials.order');
+        $this::$order = config('credentials.order');
     }
 }
