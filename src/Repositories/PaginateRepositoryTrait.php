@@ -40,7 +40,7 @@ trait PaginateRepositoryTrait
         $model = $this->model;
 
         if (property_exists($model, 'order')) {
-            $paginator = $model::orderBy($this::$order, $this::$sort)->paginate($this::$paginate, $model::$index);
+            $paginator = $model::orderBy($model::$order, $this::$sort)->paginate($this::$paginate, $model::$index);
         } else {
             $paginator = $model::paginate($this::$paginate, $model::$index);
         }
