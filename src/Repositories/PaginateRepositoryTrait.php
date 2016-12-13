@@ -40,9 +40,9 @@ trait PaginateRepositoryTrait
         $model = $this->model;
 
         if (property_exists($model, 'order')) {
-            $paginator = $model::orderBy($model::$order, $model::$sort)->paginate($model::$paginate, $model::$index);
+            $paginator = $model::orderBy($this::$order, $this::$sort)->paginate($this::$paginate, $model::$index);
         } else {
-            $paginator = $model::paginate($model::$paginate, $model::$index);
+            $paginator = $model::paginate($this::$paginate, $model::$index);
         }
 
         if (!$this->isPageInRange($paginator) && !$this->isFirstPage($paginator)) {
