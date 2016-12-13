@@ -70,7 +70,7 @@ class UserController extends AbstractController
      */
     public function index()
     {
-        $users = Credentials::getUserRepository()->paginate();
+        $users = UserRepository::paginate();
         $links = UserRepository::links();
 
         if ($users) {
