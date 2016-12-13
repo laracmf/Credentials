@@ -23,6 +23,28 @@ abstract class AbstractRepository
 {
     use BaseRepositoryTrait;
 
+
+    /**
+     * The max users per page when displaying a paginated index.
+     *
+     * @var int
+     */
+    public static $paginate = 20;
+
+    /**
+     * The columns to order by when displaying an index.
+     *
+     * @var string
+     */
+    public static $order = 'email';
+
+    /**
+     * The direction to order by when displaying an index.
+     *
+     * @var string
+     */
+    public static $sort = 'asc';
+
     /**
      * The model to provide.
      *
@@ -49,6 +71,10 @@ abstract class AbstractRepository
     {
         $this->model = $model;
         $this->validator = $validator;
+
+        $this->setOrder();
+        $this->setPagination();
+        $this->setSort();
     }
 
     /**
@@ -69,5 +95,29 @@ abstract class AbstractRepository
     public function getValidator()
     {
         return $this->validator;
+    }
+
+    /**
+     * Set max users per page when displaying a paginated index.
+     */
+    public function setPagination()
+    {
+        $this::$paginate = config('credentials.paginate');
+    }
+
+    /**
+     * Set direction to order by when displaying an index.
+     */
+    public function setSort()
+    {
+        $this::$paginate = config('credentials.sort');
+    }
+
+    /**
+     * Set columns to order by when displaying an index.
+     */
+    public function setOrder()
+    {
+        $this::$paginate = config('credentials.order');
     }
 }

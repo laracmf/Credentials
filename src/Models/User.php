@@ -43,27 +43,6 @@ class User extends EloquentUser implements HasPresenter
     public static $index = ['id', 'email', 'first_name', 'last_name'];
 
     /**
-     * The max users per page when displaying a paginated index.
-     *
-     * @var int
-     */
-    public static $paginate = 20;
-
-    /**
-     * The columns to order by when displaying an index.
-     *
-     * @var string
-     */
-    public static $order = 'email';
-
-    /**
-     * The direction to order by when displaying an index.
-     *
-     * @var string
-     */
-    public static $sort = 'asc';
-
-    /**
      * The user validation rules.
      *
      * @var array
@@ -187,39 +166,5 @@ class User extends EloquentUser implements HasPresenter
     public function roles()
     {
         return $this->belongsToMany('Cartalyst\Sentinel\Roles\EloquentRole', 'role_users', 'user_id', 'role_id');
-    }
-
-    /**
-     * Get max users per page when displaying a paginated index.
-     *
-     * @return int
-     */
-    public function getPagination()
-    {
-        return $this::$paginate;
-    }
-
-    /**
-     * Set max users per page when displaying a paginated index.
-     */
-    public function setPagination()
-    {
-        $this::$paginate = config('credentials.paginate');
-    }
-
-    /**
-     * Set direction to order by when displaying an index.
-     */
-    public function setSort()
-    {
-        $this::$paginate = config('credentials.sort');
-    }
-
-    /**
-     * Set columns to order by when displaying an index.
-     */
-    public function setOrder()
-    {
-        $this::$paginate = config('credentials.order');
     }
 }
