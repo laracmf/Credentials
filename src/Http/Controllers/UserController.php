@@ -112,7 +112,7 @@ class UserController extends AbstractController
         $val = UserRepository::validate($input, $rules, true);
 
         if ($val->fails()) {
-            return Redirect::route('users.create')->withInput()->withErrors($val->errors());
+            return redirect()->route('users.create')->withInput()->withErrors($val->errors());
         }
 
         $user = new User($input);
@@ -140,7 +140,7 @@ class UserController extends AbstractController
             $message->to($mail['email'])->subject($mail['subject']);
         });
 
-        return Redirect::route('users.show', ['users' => $user->id])
+        return redirect()->route('users.index')
             ->with('success', 'The user has been created successfully. Their password has been emailed to them.');
     }
 
@@ -149,7 +149,7 @@ class UserController extends AbstractController
      *
      * @param int $id
      *
-     * @return \Illuminate\View\View
+     * @return View
      */
     public function show($id)
     {
@@ -176,7 +176,7 @@ class UserController extends AbstractController
             $roles = 'No Roles Found';
         }
 
-        return View::make('credentials::users.show', compact('user', 'roles', 'activated'));
+        return view('credentials::users.show', compact('user', 'roles', 'activated'));
     }
 
     /**
@@ -223,8 +223,7 @@ class UserController extends AbstractController
         $val = UserRepository::validate($input, $rules, true);
 
         if ($val->fails()) {
-            return Redirect::route('users.edit', ['users' => $id])
-                ->withInput()->withErrors($val->errors());
+            return redirect()->route('users.edit', ['users' => $id])->withInput()->withErrors($val->errors());
         }
 
         $user->update($input);
@@ -268,8 +267,7 @@ class UserController extends AbstractController
             });
         }
 
-        return Redirect::route('users.show', ['users' => $user->id])
-            ->with('success', 'The user has been updated successfully.');
+        return redirect()->route('users.index')->with('success', 'The user has been updated successfully.');
     }
 
     /**
@@ -290,7 +288,7 @@ class UserController extends AbstractController
         $val = UserRepository::validate(['password' => $password], $rules, true);
 
         if ($val->fails()) {
-            return Redirect::route('users.show', ['users' => $id])->withErrors($val->errors());
+            return redirect()->route('users.show', ['users' => $id])->withErrors($val->errors());
         }
 
         $user = User::find($id);
@@ -310,7 +308,7 @@ class UserController extends AbstractController
             $message->to($mail['email'])->subject($mail['subject']);
         });
 
-        return Redirect::route('users.show', ['users' => $id])
+        return redirect()->route('users.index')
             ->with('success', 'The user\'s password has been reset successfully, and has been emailed to them.');
     }
 
@@ -327,7 +325,7 @@ class UserController extends AbstractController
         $this->checkUser($user);
 
         if (Credentials::getActivationRepository()->completed($user)) {
-            return Redirect::route('account.resend')->withInput()
+            return redirect()->route('account.resend')->withInput()
                 ->with('error', 'User is already activated.');
         }
 
@@ -345,7 +343,7 @@ class UserController extends AbstractController
             $message->to($mail['email'])->subject($mail['subject']);
         });
 
-        return Redirect::route('users.show', ['users' => $id])
+        return redirect()->route('users.index')
             ->with('success', 'The user\'s activation email has been sent successfully.');
     }
 
@@ -366,7 +364,7 @@ class UserController extends AbstractController
 
             $user->delete();
         } catch (\Exception $e) {
-            return Redirect::route('users.show', ['users' => $id])
+            return redirect()->route('users.show', ['users' => $id])
                 ->with('error', 'We were unable to delete the account.');
         }
 
@@ -380,7 +378,7 @@ class UserController extends AbstractController
             $message->to($mail['email'])->subject($mail['subject']);
         });
 
-        return Redirect::route('users.index')
+        return redirect()->route('users.index')
             ->with('success', 'The user has been deleted successfully.');
     }
 
