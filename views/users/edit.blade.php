@@ -24,33 +24,45 @@
         </div>
         <div class="col-xs-6">
             <div class="pull-right">
-                &nbsp;<a class="btn btn-success" href="{!! URL::route('users.show', array('users' => $user->id)) !!}"><i class="fa fa-file-text"></i> Show User</a>
+                &nbsp;<a class="btn btn-success" href="{!! URL::route('users.show', array('users' => $user->id)) !!}"><i
+                            class="fa fa-file-text"></i> Show User</a>
                 @if(isAdmin())
-                    <a class="btn btn-default" href="#reset_user" data-toggle="modal" data-target="#reset_user"><i class="fa fa-lock"></i> Reset Password</a>
-                    <a class="btn btn-danger" href="#delete_user" data-toggle="modal" data-target="#delete_user"><i class="fa fa-times"></i> Delete</a>
+                    <a class="btn btn-default" href="#reset_user" data-toggle="modal" data-target="#reset_user"><i
+                                class="fa fa-lock"></i> Reset Password</a>
+                    <a class="btn btn-danger" href="#delete_user" data-toggle="modal" data-target="#delete_user"><i
+                                class="fa fa-times"></i> Delete</a>
                 @endif
             </div>
         </div>
     </div>
     <hr>
-    <div class="well">
-        <?php
-        $form = ['url' => URL::route('users.update', ['users' => $user->id]),
-                '_method' => 'PATCH',
-                'button' => 'Save User',
-                'roles' => $roles,
-                'userRoles' =>  $userRoles,
-                'defaults' => [
-                        'first_name' => $user->first_name,
-                        'last_name' => $user->last_name,
-                        'email' => $user->email,
-                ], ];
+    <div class="row">
+        <div class="half">
+            <div class="box box-group">
+                <div class="box-header">
+                    <h3 class="box-title">Edit user</h3>
+                </div>
+                <div class="box-body">
+                    <?php
+                    $form = ['url' => URL::route('users.update', ['users' => $user->id]),
+                            '_method' => 'PATCH',
+                            'button' => 'Save User',
+                            'roles' => $roles,
+                            'userRoles' => $userRoles,
+                            'defaults' => [
+                                    'first_name' => $user->first_name,
+                                    'last_name' => $user->last_name,
+                                    'email' => $user->email,
+                            ],];
 
-        foreach ($roles as $role) {
-            $form['defaults']['role_'.$role->id] = in_array($role->id, $userRoles);
-        }
-        ?>
-        @include('credentials::users.form')
+                    foreach ($roles as $role) {
+                        $form['defaults']['role_' . $role->id] = in_array($role->id, $userRoles);
+                    }
+                    ?>
+                    @include('credentials::users.form')
+                </div>
+            </div>
+        </div>
     </div>
 @stop
 
@@ -63,11 +75,13 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.1.0/css/bootstrap3/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.1.0/css/bootstrap3/bootstrap-switch.min.css">
 @stop
 
 @section('js')
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.1.0/js/bootstrap-switch.min.js"></script>
+    <script type="text/javascript"
+            src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.1.0/js/bootstrap-switch.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             $(".make-switch").bootstrapSwitch();
