@@ -13,16 +13,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-xs-6">
-            <p class="lead">
-                @if($user->id == Credentials::getUser()->id)
-                    Currently editing your profile:
-                @else
-                    Currently editing {!! $user->name !!}'s profile:
-                @endif
-            </p>
-        </div>
-        <div class="col-xs-6">
+        <div class="col-xs-12">
             <div class="pull-right">
                 &nbsp;<a class="btn btn-success" href="{!! URL::route('users.show', array('users' => $user->id)) !!}"><i
                             class="fa fa-file-text"></i> Show User</a>
