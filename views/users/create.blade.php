@@ -15,9 +15,6 @@
     <div class="row">
         <div class="half">
             <div class="box box-group">
-                <div class="box-header">
-                    <h3 class="box-title">Create user</h3>
-                </div>
                 <div class="box-body">
                     <?php
                     $form = ['url' => URL::route('users.store'),
