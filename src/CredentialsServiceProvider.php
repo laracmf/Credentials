@@ -11,7 +11,7 @@
 
 namespace GrahamCampbell\Credentials;
 
-use GrahamCampbell\BootstrapCMS\Models\User;
+use App\Models\User;
 use GrahamCampbell\Credentials\Services\UsersService;
 use GrahamCampbell\Credentials\Http\Controllers\ActivationController;
 use GrahamCampbell\Credentials\Http\Controllers\LoginController;
