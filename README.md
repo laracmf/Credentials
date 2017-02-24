@@ -110,7 +110,7 @@ There is currently no usage documentation for Laravel Credentials, but we are op
 
 ## License
 
-Laravel Credentials is licensed under [The MIT License (MIT)](LICENSE).
+Based on Laravel Credentials that licensed under [The MIT License (MIT)](LICENSE).
 
 # TEST
 
