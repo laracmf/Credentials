@@ -108,7 +108,7 @@ class RegistrationController extends AbstractController
                 ->with('success', 'Your account has been created. Check your email for the confirmation link.');
         } catch (\Exception $e) {
             return Redirect::route('account.register')->withInput()->withErrors($val->errors())
-                ->with('error', 'That email address is taken.');
+                ->with('error', $e->getMessage());
         }
     }
 }
